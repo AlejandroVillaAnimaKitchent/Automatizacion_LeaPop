@@ -1,0 +1,5 @@
+streamlit==1.23.1
+selenium
+undetected-chromedriver
+seleniumbase
+pickle

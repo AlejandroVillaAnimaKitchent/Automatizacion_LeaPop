@@ -1,0 +1,4 @@
+temp/
+pkls/*
+streamlit_image_select
+__pycache__
