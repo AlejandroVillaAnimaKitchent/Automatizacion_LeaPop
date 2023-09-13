@@ -18,7 +18,7 @@ hide_streamlit_style = """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)     
 
 
-st.write("# ¡Bienvenido a la Automatización de Canales! :gear::robot_face::gear:")
+st.write("# ¡Bienvenido a la Automatización de Canales Para Lea & Pop! :ocean::pirate_flag: :ocean:")
 
 # st.sidebar.success("Selecciona una tarea:")
 
