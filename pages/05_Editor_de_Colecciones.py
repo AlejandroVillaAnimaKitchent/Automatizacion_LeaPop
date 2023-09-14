@@ -38,19 +38,15 @@ def handle_choice(choice):
     global df
     if choice =="Ninguna":
          st.error('Debe Escoger una Opción válida')   
-    elif choice == "Cuquines":
-        file_path = r'\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Cuquines_DB.xls'
-        df = pd.read_excel(file_path)
+    elif choice == "Pops":
+         dB_path = r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Pops_LeaPop.csv'
+         df = pd.read_csv(dB_path)
     elif choice == "Canciones":
-        file_path = r'\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Canciones_DB.xls'
-        df = pd.read_excel(file_path)
-    elif choice == "Promos":
-        file_path = r'\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Promos_DB.xls'
-        df = pd.read_excel(file_path)
-    elif choice == "Miscelaneas":
-        file_path = r'\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Miscelaneas_DB.xls'
-        df = pd.read_excel(file_path)
-
+         dB_path = r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Canciones_LeaPop.csv'
+         df = pd.read_csv(dB_path)
+    elif choice == "Misceláneas":
+         dB_path = r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miscelanea_LeaPop.csv'
+         df = pd.read_csv(dB_path)
 # Streamlit app
 def main():
     st.title("Editor de Colecciones")
@@ -58,7 +54,7 @@ def main():
     # Create a label and dropdown menu for the user to choose their video collection
     st.subheader("Escoge el tipo de Colección que desea hacer")
     st.write('Esta página editará el archivo de colecciones que desea hacer contrastándolo con nuestras bases de datos y eliminando aquellas colecciones que ya han sido realizadas.')
-    choices = ["Ninguna","Cuquines", "Canciones", "Promos", "Miscelaneas"]
+    choices = ["Ninguna","Pops", "Canciones", "Misceláneas"]
     choice = st.selectbox("Seleccione un tipo de colección", choices)
     file = st.file_uploader("Suba el Archivo Excel de sus colecciones", type=["xlsx", "xls","ods"])
     # Create a button to submit the choice
@@ -76,10 +72,10 @@ def main():
         if st.button("Enviar"):
             df2= process_collection_file(df2)
             try:
-                df2.to_excel(f'\\\\cancer\\Material_Definitivo\\telerin\\COLECCIONES\\{file.name}',index=False, header=False)
+                df2.to_excel(f'\\\\cancer\\Material_Definitivo\\LEA\\COLECCIONES\\{file.name}',index=False, header=False)
                 st.success("De las colecciones entregadas se tuvieron en cuenta las siguientes:")
                 st.dataframe(df2)
-                st.success(f'Su nuevo archivo {file.name}  está en la carpeta \\\\cancer\\Material_Definitivo\\telerin\\COLECCIONES')
+                st.success(f'Su nuevo archivo {file.name}  está en la carpeta \\\\cancer\\Material_Definitivo\\LEA\\COLECCIONES')
                 st.success('Puede dirigirse directamente a la aplicación a hacer sus colecciones.')
             except PermissionError: 
                 st.error('El archivo que se intenta reescribir está abierto, por favor cierrelo.')
