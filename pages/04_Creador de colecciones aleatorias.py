@@ -14,10 +14,10 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 st.title("Creador  de colecciones Aleatorias")
 
-st.subheader('Aquí se podrá crear los archivos excel para usar en la aplicación AppColecciones')
+st.subheader('Aquí se podrá crear los archivos excel para usar en la aplicación App Colecciones Lea & Pop')
 
 #We Establish the data needed
-Promos_Intro_df = pd.read_csv(r"\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Promos_Intros.csv")
+Promos_Intro_df = pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Promos_Intro_LeaPop.csv")
 
 # collect_df =pd.read_csv(r"\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Individual_y_Colecciones.csv")    
 
@@ -39,8 +39,8 @@ else:
 #intro_check = len(collect_df[collect_df['Name']=='Intro'])>0
 
 
-categories = ['Ninguna','Canciones','Cuquines','Promos','Miscelaneas']
-languages ={'Español':'ES','Portugués':'PT','Inglés':'EN'}
+categories = ['Ninguna','Canciones','Pops','Miscelaneas']
+languages ={'Español':'ES','Portugués':'PT'}
 
 
 def sample_without_consecutive_repeats(df, sample_size):
@@ -54,7 +54,7 @@ def sample_without_consecutive_repeats(df, sample_size):
     return sample
 
 def rand_generator(numero):       
-    intro_df = Promos_Intro_df[Promos_Intro_df['Category']=='Intro']
+    intro_df = Promos_Intro_df[(Promos_Intro_df['Category']=='Intro') &(Promos_Intro_df['Language']==idioma)]
     try: 
         if repeat =='Si':
             sample = sample_without_consecutive_repeats(df, numero)
@@ -92,7 +92,7 @@ repeat =st.radio('Desea que algunos videos se repitan?',('No','Si'))
 num_promo=0
 if promo=='Si':
     num_promo=st.number_input('En que posición de la colecciones debe ir la promo',step=1,value=1,format="%d", max_value=num_videos+1)
-    promo_dict ={'App':'Promo_App','Trailer': 'Promo_Trailer','Spotify':'Promo_Spotify'}
+    promo_dict ={'App':'Promo_App','Trailer': 'Promo_Trailer'} #,'Spotify':'Promo_Spotify'}
     la_promo= st.selectbox('Elija el tipo de promo para sus colecciones',promo_dict.keys())
     promos_df = Promos_Intro_df[(Promos_Intro_df['Category']== promo_dict[la_promo]) & (Promos_Intro_df['Language']==idioma)]
     #df[df['Category']=='Promo']
