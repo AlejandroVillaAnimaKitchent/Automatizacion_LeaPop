@@ -21,12 +21,11 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 # Colecciones  
 
-collect_df =pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Colecciones_LeaPop.csv")
+collect_df =pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Individuales_Colecciones_LeaPop.csv")
 ##################################################################################### 
 #Channels to include Provisionary solution
 
-csv_file = r'\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\canales_excel_yt.csv'
-df_channel = pd.read_csv(csv_file)
+csv_file = df_channel = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\canales_excel_yt.csv')
 
 ##################################################################################### 
 channels = df_channel.set_index('Título del canal')['Canal'].to_dict()
@@ -38,10 +37,8 @@ Promos_Intro_df = pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea
 #####################################################################################
 # Dictionary of Thumbnails 
 
-df_thumbs1= pd.read_excel(r'\\cancer\Material_Definitivo\telerin\THUMBNAILS\00_Catálogo Miniaturas.xlsx',sheet_name = 0,skiprows=3)
-df_thumbs2 = pd.read_excel(r'\\cancer\Material_Definitivo\telerin\THUMBNAILS\00_Catálogo Miniaturas.xlsx',sheet_name = 1,skiprows=3)
-df_thumbs = pd.concat([df_thumbs1,df_thumbs2],ignore_index=True)
-df_thumbs = df_thumbs.drop(df_thumbs.columns[[0,1]], axis=1)
+df_thumbs = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miniaturas_LeaPop.csv')
+df_thumbs = df_thumbs.drop(df_thumbs.columns[[0]], axis=1)
 df_dict = df_thumbs.apply(lambda row: row.dropna().values, axis=1).to_dict()
 all_thumbs = {values[0]: list(values[1:]) for values in df_dict.values()}
     
@@ -64,7 +61,7 @@ def filenames_fun(category_chosen,idioma):
 #FUNCTION TO CHOOSE THE PARAMETERS NEEDED FOR THE CREATION OF THE EXCEL FILE 
 
 def parameter_choice():
-    global channel_choice, idioma, category_chosen
+    global channel_choice, idioma, category_chosen, lengua
     global videos_df, titles_df, labels_df
     global thumbs_by_song, thumbs_by_cuquin
 
@@ -72,10 +69,10 @@ def parameter_choice():
     channel_choice = st.selectbox("Seleccione un canal", sorted(list(channels.keys())))
     col1,col2 =st.columns(2)
     category_chosen = col1.selectbox('Seleccione una categoria',categories)
-    idioma = col2.selectbox('Seleccione un idioma',languages.keys())
+    idioma = col2.selectbox('Seleccione el idioma de sus vídeos',languages.keys())
+    lengua = st.radio('Desea que los títulos y las descripciones de sus vídeos sean en inglés',('No','Si'))
 
-
-    st.write('Seleccione los vídeos que desea publicar en su canal')
+    #st.write('Seleccione los vídeos que desea publicar en su canal')
     
 #####################################################################################    
 #FUNCTION TO REQUEST THE DAY AND  HOURS  OF PUBLICATION
@@ -117,14 +114,19 @@ def keywords_request():
     tag_musical =[]
     tag_general =[]
     tag_educativo =[]
-    if idioma == 'Español':
-            tag_musical = tags_description['Tags_Music_ES'].tolist()
-            tag_general = tags_description['Tags_General_ES'].tolist()
-            tag_educativo =tags_description['Tags_Educativo_ES'].tolist()
-    elif idioma =='Portugués':
-        tag_musical = tags_description['Tags_Music_PT'].tolist()
-        tag_general = tags_description['Tags_General_PT'].tolist()
-        tag_educativo =tags_description['Tags_Educativo_PT'].tolist()
+    if lengua =='Si':
+        tag_musical = tags_description['Tags_Music_EN'].dropna().tolist()
+        tag_general = tags_description['Tags_General_EN'].dropna().tolist()
+        tag_educativo =tags_description['Tags_Educativo_EN'].dropna().tolist()
+    else: 
+        if idioma == 'Español':
+                tag_musical = tags_description['Tags_Music_ES'].dropna().tolist()
+                tag_general = tags_description['Tags_General_ES'].dropna().tolist()
+                tag_educativo =tags_description['Tags_Educativo_ES'].dropna().tolist()
+        elif idioma =='Portugués':
+            tag_musical = tags_description['Tags_Music_PT'].dropna().tolist()
+            tag_general = tags_description['Tags_General_PT'].dropna().tolist()
+            tag_educativo =tags_description['Tags_Educativo_PT'].dropna().tolist()
         
     if category_chosen =='Music':
         keywords = tag_musical + tag_general
@@ -139,6 +141,8 @@ def keywords_request():
         ro_items = keywords[ro*num_cols: (ro+1)*num_cols]
         cols = st.columns(num_cols)
         for cols_idx, items in enumerate(ro_items):
+           #st.write(cols_idx)
+            #st.write(ro_items)
             checkbox_sta = cols[cols_idx].checkbox(items,key=items + str(cols_idx) +str(ro_items))
             if checkbox_sta:
                 key_words.append(items)
@@ -157,11 +161,16 @@ def create_titles():
     global titles_df
     words = ' ' + st.text_input('Escriba una frase adicional que acompañe a los títulos (i.e. "y más canciones infantiles con Lea y Pop")')
     titles_df = []
+    nombre =str()
+    if lengua =='Si':
+        nombre='Name_english'
+    else: 
+        nombre='Name_Language'
     if words:
         for col in collections_selected.columns:
             videos= [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
             try: 
-                titles_df.append(selected_videos[selected_videos.Filename==videos[0]]['Name_Language'].values[0]+words)
+                titles_df.append(selected_videos[selected_videos.Filename==videos[0]][nombre].values[0]+words)
             except:
                 titles_df.append(selected_videos[selected_videos.Filename==videos[0]]['Name'].values[0]+words)
     else:
@@ -169,7 +178,7 @@ def create_titles():
         for col in collections_selected.columns:
             videos= [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
             try: 
-                titles_df.append(selected_videos[selected_videos.Filename==videos[0]]['Name_Language'].values[0])
+                titles_df.append(selected_videos[selected_videos.Filename==videos[0]][nombre].values[0])
             except:
                 titles_df.append(selected_videos[selected_videos.Filename==videos[0]]['Name'].values[0])
 
@@ -179,14 +188,17 @@ def create_titles():
 def create_descs():
     global desc_df
     st.write('Elija una(s) descripción(es) para sus vídeos y/o escribala(s)')
-    if idioma == 'Español':
-        descriptions = [ tag for tag in tags_description['Description_ES'].tolist() if pd.notna(tag)]
-    elif idioma == 'Portugués':
-        descriptions = [ tag for tag in tags_description['Description_PT'].tolist() if pd.notna(tag)]
+    if lengua=='Si':
+        descriptions = [ tag for tag in tags_description['Description_EN'].tolist() if pd.notna(tag)]
+    else:
+        if idioma == 'Español':
+            descriptions = [ tag for tag in tags_description['Description_ES'].tolist() if pd.notna(tag)]
+        elif idioma == 'Portugués':
+            descriptions = [ tag for tag in tags_description['Description_PT'].tolist() if pd.notna(tag)]
     desc = str()
     
     for i, des in enumerate(descriptions):
-        la_box = st.checkbox(des, key=i)
+        la_box = st.checkbox(des, key=i + len(str(des)))
         if la_box:
             desc += des + ' '
             
@@ -254,16 +266,20 @@ def ask_file():
         videos_list = list(set(videos_list))
         selected_videos = collect_df[(collect_df['Filename'].isin(videos_list)) & (collect_df['Components']==1)]
         videos_df = selected_videos.Name
-
+        #st.dataframe(selected_videos)
+        #st.write(videos_df)
+        #st.dataframe(df_thumbs)
         # Los Thumbs 
         thumb_dict ={}
         for Name in videos_df: 
-            # print(Name)
+            
             if 'promo' not in str.lower(Name):
                 related_thumbs = df_thumbs[df_thumbs['Title Spanish'] == Name]
-                non_na_thumbs = related_thumbs.drop(['Season', '#'], axis=1).stack().dropna().tolist()
+                non_na_thumbs = related_thumbs.stack().dropna().tolist() #.drop(['Season','Number'], axis=1)
+                #st.write(non_na_thumbs[0])
                 thumb_dict[non_na_thumbs[0]] =non_na_thumbs[1:] 
-        
+                
+                
         # Los Tags 
         asset_labels = []
     
@@ -380,13 +396,18 @@ def main():
             videos = [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
             tags_IP = []
             tags_pieza = []
-            # st.text(videos)
+            #st.dataframe(collections_selected)
+            #st.text(videos)
             for video in videos:
                 ips_ = list(selected_videos[selected_videos.Filename==video].Tag_IP.values)[0]
+                #st.write(video)
+                # st.write(ips_)
+                # ty = type(ips_)
+                # st.write(str(ty))
                 ips = ips_.split('|')
                 
                 piezas_ = list(selected_videos[selected_videos.Filename==video].Tag_pieza.values)[0]
-    
+                #st.write(piezas_)
                 piezas = piezas_.split('|')
                 tags_IP += ips
                 tags_pieza += piezas
@@ -434,7 +455,8 @@ def main():
            st.error('Recuerde elegir todas las opciones')
                
            
-    except:
+    except Exception as e:
+        st.write(e)
         st.info('Necesitas añadir un excel o eleger colecciones de vídeos mediante las pestañas anteriores.')
         
 #####################################################################################
