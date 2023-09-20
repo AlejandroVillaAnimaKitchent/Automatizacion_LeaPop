@@ -20,18 +20,16 @@ st.title("Catálogo de Miniaturas de Canciones")
 
 st.subheader('Escoge las miniaturas que quieras usar.')
 
-df_canciones = pd.read_excel(r'\\cancer\Material_Definitivo\telerin\THUMBNAILS\00_Catálogo Miniaturas.xlsx', sheet_name=0, skiprows=3)
+df_canciones = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miniaturas_LeaPop.csv')
+df_canciones =df_canciones[df_canciones['Category']=='Music']
 
-
-# selected = ['Tengo una muñeca vestida de azul', 'The Wheels on the bus 2',
-#        'Un Elefante se Columpiaba', 'Vaca lechera',
-#        'Vamos a Contar Mentiras', 'Vamos a la escuela',
-#        'Vamos a la playa', 'Wheels on the bus colores']
 selected = []
 ###################
-# Functions define to perform a search on catalago_miniaturas
+# Functions define to perform a search on Miniaturas_LeaPop
+
 ###################
 # Using Google Translator we define 
+
 def translate_text(text,language):
     translator = Translator()
     translation = translator.translate(text, dest=language)
@@ -41,7 +39,7 @@ def translate_text(text,language):
 
 def search_entries(df, word):
     sub_df =pd.DataFrame(columns = df.columns)
-    languages =['spanish','portuguese','english']
+    languages =['spanish','portuguese']
     for language in languages:
         try:
             search_word = translate_text(word,language)
@@ -60,7 +58,7 @@ else:
     st.info('No hay vídeos seleccionados')    
     palabra =st.text_input('Ingrese una palabra clave de la miniatura que desea buscar : ')
     if palabra:
-        df = pd.read_csv(r'\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Individual_y_Colecciones.csv')
+        df = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Individuales_Colecciones_LeaPop.csv')
         df = df[(df['Components']==1)& (df['Activo']=='Si')]
         df_videos = search_entries(df,palabra)
         selected =  list(df_videos.Name.unique())
@@ -72,7 +70,7 @@ else:
     canciones = df_canciones[(~df_canciones.Miniatura_01.isna()) & (df_canciones['Title Spanish'].isin(selected))].reset_index(drop=True)
     # st.text(len(canciones))
 songs = canciones['Title Spanish'].values
-df_sliced = canciones.iloc[:, 2:21] 
+df_sliced = canciones.iloc[:, 1:21] 
 df_dict = df_sliced.apply(lambda row: row.dropna().values, axis=1).to_dict()
 new_dict = {values[0]: list(values[1:]) for values in df_dict.values()}
 
@@ -98,7 +96,7 @@ for song_slice in generate_slices(len(songs)):
                         with cols[i]:
                             num = row*4 + i +1 
                             image = con_minis[tab_index+song_slice.start][num]
-                            st.image(r"\\cancer\Material_Definitivo\telerin\THUMBNAILS\lowres\{}".format(image))
+                            st.image(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Thumbs\lowres\{}".format(image))
                             agree = st.checkbox("{}".format(image.replace('.png','')),key=songs[tab_index+song_slice.start]+str(row)+str(i)+'_')
                             mini_list.append(agree) 
         song_thumb_dict[songs[tab_index+song_slice.start]]=mini_list
