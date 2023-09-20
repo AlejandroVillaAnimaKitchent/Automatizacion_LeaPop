@@ -179,9 +179,9 @@ if (num_collect > 0) & (num_videos>0):
         
         st.session_state['collections_selected'] = df_final
         
-        df_final.to_excel(f'\\\\cancer\\Material_Definitivo\\telerin\\COLECCIONES\\{nombre_archivo}.xlsx',index=False,header=True)
+        df_final.to_excel(f'\\\\cancer\Material_Definitivo\\LEA\\COLECCIONES\\{nombre_archivo}.xlsx',index=False,header=True)
         st.success(f'Se ha creado el archivo excel con nombre {nombre_archivo}')
-        st.success('Ubicado en' + r'\\' + '\\cancer\\Material_Definitivo\\telerin\\COLECCIONES')
+        st.success('Ubicado en' + r'\\' + '\\cancer\Material_Definitivo\LEA\COLECCIONES')
        
 else: st.info('Elija el número de colecciones')
 
