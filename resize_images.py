@@ -1,10 +1,10 @@
 import os 
 from PIL import Image
 
-folder = r"\\cancer\Material_Definitivo\telerin\THUMBNAILS"
-folderlow = r"\\cancer\Material_Definitivo\telerin\THUMBNAILS\lowres"
-images = [file for file in os.listdir(folder) if file.endswith('png')]
-imageslow = [file for file in os.listdir(folderlow) if file.endswith('png')]
+folder = r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Thumbs"
+folderlow = r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Thumbs\lowres"
+images = [file for file in os.listdir(folder) if file.endswith(('png','jpg','PNG','JPG'))]
+imageslow = [file for file in os.listdir(folderlow) if file.endswith(('png','jpg','PNG','JPG'))]
 
 for file in images:
     if file not in imageslow:
