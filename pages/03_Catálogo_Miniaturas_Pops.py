@@ -16,11 +16,12 @@ hide_streamlit_style = """
             """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)     
 
-st.title("Catálogo de Miniaturas de Cuquines")
+st.title("Catálogo de Miniaturas de Pops")
 
 st.subheader('Escoge las miniaturas que quieras usar.')
 
-df_cuquines = pd.read_excel(r'\\cancer\Material_Definitivo\telerin\THUMBNAILS\00_Catálogo Miniaturas.xlsx', sheet_name=1, skiprows=3)
+df_pops = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miniaturas_LeaPop.csv')
+df_pops = df_pops[df_pops['Category']=='Education']
 
 
 # selected = ['Tengo una muñeca vestida de azul', 'The Wheels on the bus 2',
@@ -60,34 +61,34 @@ if 'selected_videos' in st.session_state:
 else:
     palabra =st.text_input('Ingrese una palabra clave de la miniatura que desea buscar : ')
     if palabra:
-        df = pd.read_csv(r'\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Individual_y_Colecciones.csv')
+        df = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Individuales_Colecciones_LeaPop.csv')
         df = df[(df['Components']==1)& (df['Activo']=='Si')]
         df_videos = search_entries(df,palabra)
         selected =  list(df_videos.Name.unique())    
     
 if len(selected)==0:
-    cuquines = df_cuquines[~df_cuquines.Miniatura_01.isna()].reset_index(drop=True)
+    pops = df_pops[~df_pops.Miniatura_01.isna()].reset_index(drop=True)
 else:
-    cuquines = df_cuquines[(~df_cuquines.Miniatura_01.isna()) & (df_cuquines['Title Spanish'].isin(selected))].reset_index(drop=True)
+    pops = df_pops[(~df_pops.Miniatura_01.isna()) & (df_pops['Title Spanish'].isin(selected))].reset_index(drop=True)
     
-cuqs = cuquines['Title Spanish'].values
-df_sliced = cuquines.iloc[:, 1:21] 
+poppies = pops['Title Spanish'].values
+df_sliced = pops.iloc[:, 1:21] 
 df_dict = df_sliced.apply(lambda row: row.dropna().values, axis=1).to_dict()
 new_dict = {values[0]: list(values[1:]) for values in df_dict.values()}
 
-thumbs_by_cuquin = {}
-cuq_thumb_dict = {}
+thumbs_by_pop = {}
+pop_thumb_dict = {}
 
-# Cuquines
-for cuq_silce in generate_slices(len(cuqs)):
-    cuqtabs = st.tabs(list(cuqs)[cuq_silce])
-    con_minis = df_sliced.apply(lambda row: row.dropna().values, axis=1)[cuq_silce]
-    for tab_index in range(len(cuqtabs)):
-        with cuqtabs[tab_index]: 
+# Pops
+for pop_silce in generate_slices(len(poppies)):
+    poptabs = st.tabs(list(poppies)[pop_silce])
+    con_minis = df_sliced.apply(lambda row: row.dropna().values, axis=1)[pop_silce]
+    for tab_index in range(len(poptabs)):
+        with poptabs[tab_index]: 
             mini_list = []
             with st.expander("Desplegar"):
-                st.header(cuqs[tab_index+cuq_silce.start])
-                num_thumbs = len(con_minis[tab_index+cuq_silce.start])-1
+                st.header(poppies[tab_index+pop_silce.start])
+                num_thumbs = len(con_minis[tab_index+pop_silce.start])-1
                 num_rows = (num_thumbs//4)+1
                 for row in range(num_rows):
                     cols = st.columns(4, gap='medium')
@@ -95,17 +96,17 @@ for cuq_silce in generate_slices(len(cuqs)):
                     for i in range(sub_cols):
                         with cols[i]:
                             num = row*4 + i +1 
-                            image = con_minis[tab_index+cuq_silce.start][num]
-                            st.image(r"\\cancer\Material_Definitivo\telerin\THUMBNAILS\lowres\{}".format(image))
-                            agree = st.checkbox("{}".format(image.replace('.png','')),key=cuqs[tab_index+cuq_silce.start]+str(row)+str(i)+'_')
+                            image = con_minis[tab_index+pop_silce.start][num]
+                            st.image(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Thumbs\lowres\{}".format(image))
+                            agree = st.checkbox("{}".format(image.replace('.png','')),key=poppies[tab_index+pop_silce.start]+str(row)+str(i)+'_')
                             mini_list.append(agree) 
                             # st.session_state['song_thumb_list'].append(agree)
-        cuq_thumb_dict[cuqs[tab_index+cuq_silce.start]]=mini_list
+        pop_thumb_dict[poppies[tab_index+pop_silce.start]]=mini_list
                             
      
 if st.sidebar.button('Guardar selección de cuquines'):
     for key in new_dict:
-        thumbs_by_cuquin[key] = list(compress(new_dict[key],cuq_thumb_dict[key]))
-    st.session_state['thumbs_by_cuquin'] = thumbs_by_cuquin
+        thumbs_by_pop[key] = list(compress(new_dict[key],pop_thumb_dict[key]))
+    st.session_state['thumbs_by_pop'] = thumbs_by_pop
 
     
