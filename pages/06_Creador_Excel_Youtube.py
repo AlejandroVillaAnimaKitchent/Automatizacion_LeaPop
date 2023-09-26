@@ -151,7 +151,6 @@ def keywords_request():
     if words:
         keywords_df = words +','+','.join(str(i) for i in key_words)
     else:
-        # keywords_df = ''.join(str(i)+',' for i in key_words)
         keywords_df = ','.join(str(i) for i in key_words)
         
 #####################################################################################        
@@ -188,6 +187,7 @@ def create_titles():
 def create_descs():
     global desc_df
     st.write('Elija una(s) descripción(es) para sus vídeos y/o escribala(s)')
+    descriptions = []
     if lengua=='Si':
         descriptions = [ tag for tag in tags_description['Description_EN'].tolist() if pd.notna(tag)]
     else:
@@ -301,8 +301,6 @@ def ask_file():
 
 #####################################################################################
 
-def No_file(): 
-    global  videos_df, collections_selected, selected_videos, thumb_dict
     
 #####################################################################################
 #FUNCTION TO CREATE THUMBS AND LABELS LIST 
@@ -310,7 +308,7 @@ def No_file():
 def thumbs_labels_creator(): 
     global custom_thumbs, asset_labels
     custom_thumbs = []
-
+    #asset_labels =[]
     for j in range(length_df):
         col = collections_selected.columns[j%len(collections_selected.columns)]
         if len(thumb_dict.keys())>0:
@@ -327,6 +325,30 @@ def thumbs_labels_creator():
                 videofilename = videos[0]
                 video = selected_videos[selected_videos.Filename==videofilename]['Name'].values[0]
                 custom_thumbs.append(random.choice(all_thumbs[video]))
+                
+    asset_labels = []
+ 
+    for col in collections_selected.columns:
+         videos = [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
+         tags_IP = []
+         tags_pieza = []
+         #st.dataframe(collections_selected)
+         #st.text(videos)
+         for video in videos:
+             ips_ = list(selected_videos[selected_videos.Filename==video].Tag_IP.values)[0]
+             #st.write(video)
+             # st.write(ips_)
+             # ty = type(ips_)
+             # st.write(str(ty))
+             ips = ips_.split('|')
+             
+             piezas_ = list(selected_videos[selected_videos.Filename==video].Tag_pieza.values)[0]
+             #st.write(piezas_)
+             piezas = piezas_.split('|')
+             tags_IP += ips
+             tags_pieza += piezas
+         asset_labels.append('|'.join(list(set(tags_IP+tags_pieza))))
+    #st.write(asset_labels)
     
 #####################################################################################
            
@@ -336,7 +358,7 @@ def thumbs_labels_creator():
 #DEPLOYMENT THE APP USING ALL THE PREVIOUSLY DEFINED FUNCTIONS, DATAFRAMES AND DICTIONARIES.
  
 def main():
-    global thumb_dict, videos_df
+    global thumb_dict, videos_df, collections_selected, selected_videos
     
     st.title('Creador de Hoja de Cálculo para Canal Youtube')
     
@@ -388,35 +410,42 @@ def main():
     
 #####################################################################################
     #If The user wants to utilize the collection previously done:
-    No_file() 
+        
+    ##############################################################################
+    # Function jsut to define all the variables as global 
+    def No_file(): 
+        global  videos_df, collections_selected, selected_videos, thumb_dict
+    ##############################################################################
     if file_or_not =='Si': 
-        asset_labels = []
+        No_file() 
+        # asset_labels = []
     
-        for col in collections_selected.columns:
-            videos = [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
-            tags_IP = []
-            tags_pieza = []
-            #st.dataframe(collections_selected)
-            #st.text(videos)
-            for video in videos:
-                ips_ = list(selected_videos[selected_videos.Filename==video].Tag_IP.values)[0]
-                #st.write(video)
-                # st.write(ips_)
-                # ty = type(ips_)
-                # st.write(str(ty))
-                ips = ips_.split('|')
+        # for col in collections_selected.columns:
+        #     videos = [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
+        #     tags_IP = []
+        #     tags_pieza = []
+        #     #st.dataframe(collections_selected)
+        #     #st.text(videos)
+        #     for video in videos:
+        #         ips_ = list(selected_videos[selected_videos.Filename==video].Tag_IP.values)[0]
+        #         #st.write(video)
+        #         # st.write(ips_)
+        #         # ty = type(ips_)
+        #         # st.write(str(ty))
+        #         ips = ips_.split('|')
                 
-                piezas_ = list(selected_videos[selected_videos.Filename==video].Tag_pieza.values)[0]
-                #st.write(piezas_)
-                piezas = piezas_.split('|')
-                tags_IP += ips
-                tags_pieza += piezas
-            asset_labels.append('|'.join(list(set(tags_IP+tags_pieza))))
-    
+        #         piezas_ = list(selected_videos[selected_videos.Filename==video].Tag_pieza.values)[0]
+        #         #st.write(piezas_)
+        #         piezas = piezas_.split('|')
+        #         tags_IP += ips
+        #         tags_pieza += piezas
+        #     asset_labels.append('|'.join(list(set(tags_IP+tags_pieza))))
+        
     #If not, we ask for a local file to be uploaded. 
     
-    elif file_or_not =='No': ask_file()
-    
+    elif file_or_not =='No': 
+        No_file() 
+        ask_file()
     
     
 
