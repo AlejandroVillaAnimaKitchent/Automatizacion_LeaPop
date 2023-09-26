@@ -412,7 +412,7 @@ def main():
     #If The user wants to utilize the collection previously done:
         
     ##############################################################################
-    # Function jsut to define all the variables as global 
+    # Function just to define all the variables as global 
     def No_file(): 
         global  videos_df, collections_selected, selected_videos, thumb_dict
     ##############################################################################
