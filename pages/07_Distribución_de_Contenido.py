@@ -161,16 +161,21 @@ def run_selenium(file):
     
     #################################################################################################################
     #ALEJANDRO'S 
+    
+    service_route =  r'C:\Users\alejandro.villa\.wdm\drivers\chromedriver\win64\116.0.5845.188\chromedriver.exe'
 
-    service_ = Service(r'C:\Users\alejandro.villa\.wdm\drivers\chromedriver\win64\115.0.5790.173\chromedriver.exe')
 
     #################################################################################################################
 
     #################################################################################################################
     #PABLO'S
 
-    #service_ = Service(r'C:\Users\pablo.perezmartin\.wdm\drivers\chromedriver\win64\116.0.5845.97\chromedriver-win32\chromedriver.exe')
+    #service_route = r'C:\Users\pablo.perezmartin\.wdm\drivers\chromedriver\win64\116.0.5845.97\chromedriver-win32\chromedriver.exe'
 
+    #################################################################################################################
+    
+    #################################################################################################################
+    service_ = Service( service_route)
     #################################################################################################################
     options = Options()
     options.add_argument("--headless=new")
@@ -225,7 +230,10 @@ def run_selenium(file):
         file_errors = [k for k, v in progress.items() if v != '100% uploaded']
         if len(file_errors)>0:
             info.info('Se ha producido un error con el archivo de metadata. Reintentando.')
-            upload_file(driver,os.path.join(r'C:\Users\pablo.perezmartin\Documents\cleoycuquin\Automatizacion\temp',final_filename))
+            if 'alejandro.villa' in service_route:
+                upload_file(driver,os.path.join(r'C:\Users\alejandro.villa\Documents\Codigos\Automatizacion\temp',final_filename))
+            elif 'pablo.perezmartin' in service_route:
+                upload_file(driver,os.path.join(r'C:\Users\pablo.perezmartin\Documents\cleoycuquin\Automatizacion\temp',final_filename))
             time.sleep(2)
             progress_list = driver.find_element('xpath','//*[@id="progress-list"]')
             progress_text = progress_list.text
@@ -299,7 +307,7 @@ def run_selenium(file):
         
         # time.sleep(60)
         progreso_archivos = WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="expand-button"]')))
-        while progreso_archivos.text != 'Uploads complete':
+        while progreso_archivos.text not in ['Uploads complete', 'Subidas completadas']:
             progreso_archivos = WebDriverWait(driver, 1).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="expand-button"]')))
             pass
         time.sleep(5)
