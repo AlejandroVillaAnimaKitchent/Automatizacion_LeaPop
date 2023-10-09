@@ -3,7 +3,7 @@ import pandas as pd
 import math
 from datetime import datetime, timedelta, time
 import random
-
+import numpy as np
 #We create the page's style  
 
 st.set_page_config(layout="wide")
@@ -274,6 +274,7 @@ def ask_file():
         for Name in videos_df: 
             
             if 'promo' not in str.lower(Name):
+                # print(Name)
                 related_thumbs = df_thumbs[df_thumbs['Title Spanish'] == Name]
                 non_na_thumbs = related_thumbs.stack().dropna().tolist() #.drop(['Season','Number'], axis=1)
                 #st.write(non_na_thumbs[0])
@@ -289,12 +290,18 @@ def ask_file():
             tags_pieza = []
             # st.text(videos)
             for video in videos:
+                # print(video)
                 ips_ = list(selected_videos[selected_videos.Filename==video].Tag_IP.values)[0]
                 ips = ips_.split('|')
                 
-                piezas_ = list(selected_videos[selected_videos.Filename==video].Tag_pieza.values)[0]
+                tags_pieza = list(selected_videos[selected_videos.Filename==video].Tag_pieza.values)
+                piezas_ = tags_pieza[0] if len(tags_pieza)>0 else ''
     
-                piezas = piezas_.split('|')
+                if isinstance(piezas_, str):
+                    piezas = piezas_.split('|') if piezas_ != '' else []
+                else:
+                    piezas = [] if np.isnan(piezas_) else [piezas_]
+
                 tags_IP += ips
                 tags_pieza += piezas
             asset_labels.append('|'.join(list(set(tags_IP+tags_pieza))))
@@ -336,7 +343,7 @@ def thumbs_labels_creator():
 #DEPLOYMENT THE APP USING ALL THE PREVIOUSLY DEFINED FUNCTIONS, DATAFRAMES AND DICTIONARIES.
  
 def main():
-    global thumb_dict, videos_df
+    global videos_df, collections_selected, selected_videos, thumb_dict, asset_labels
     
     st.title('Creador de Hoja de Cálculo para Canal Youtube')
     

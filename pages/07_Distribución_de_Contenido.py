@@ -108,10 +108,10 @@ def get_file_path(file):
 def find_file(filename):
     # Check in specific folders first
     specific_folders = [
-        r'\\cancer\Material_Definitivo\telerin\THUMBNAILS',
-        r'\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones',
-        r'\\cancer\Material_Definitivo\telerin\COLECCIONES\Canciones sueltas',
-        r'\\cancer\Material_Definitivo\telerin\THUMBNAILS\Cleo y Cuquín T01'
+        r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Thumbs',
+        r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Episodios sueltos',
+        r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Canciones sueltas',
+        r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Colecciones'
         ]
     for folder in specific_folders:
         for file in os.listdir(folder):
@@ -123,13 +123,6 @@ def find_file(filename):
     
     # If not found in specific folders and file trackers, walk the root directory
     root_dirs = [
-        r'\\cancer\Material_Definitivo\telerin\SUPERCANAL',
-        r'\\cancer\Material_Definitivo\telerin\SING ALONG',
-        r'\\cancer\Material_Definitivo\telerin\SHORTS TT',
-        r'\\cancer\Material_Definitivo\telerin\COLECCIONES_2023',
-        r'\\cancer\Material_Definitivo\telerin\CCYT_VM',
-        r'\\cancer\Material_Definitivo\telerin\Cuquines (EP)',
-        r'\\cancer\Material_Definitivo\telerin\CLEO & CUQUIN\CC_EPISODIOS\04_IMAGEN\EPISODIOS SIN INTRO NI CREDITOS'
         ]
     for root_dir in root_dirs:
         for dirpath, dirnames, filenames in os.walk(root_dir):
@@ -162,14 +155,14 @@ def run_selenium(file):
     #################################################################################################################
     #ALEJANDRO'S 
 
-    service_ = Service(r'C:\Users\alejandro.villa\.wdm\drivers\chromedriver\win64\115.0.5790.173\chromedriver.exe')
+    # service_ = Service(r'C:\Users\alejandro.villa\.wdm\drivers\chromedriver\win64\115.0.5790.173\chromedriver.exe')
 
     #################################################################################################################
 
     #################################################################################################################
     #PABLO'S
 
-    #service_ = Service(r'C:\Users\pablo.perezmartin\.wdm\drivers\chromedriver\win64\116.0.5845.97\chromedriver-win32\chromedriver.exe')
+    service_ = Service(r'C:\Users\pablo.perezmartin\.wdm\drivers\chromedriver\win64\116.0.5845.97\chromedriver-win32\chromedriver.exe')
 
     #################################################################################################################
     options = Options()
@@ -238,8 +231,9 @@ def run_selenium(file):
     num_minis = len(minis)
     upload_bar = st.progress(bar_num, 'Subiendo miniaturas.')
     for mini in minis:
-        # print(mini)
+        print(mini)
         mini_path = find_file(mini)
+        # print()
         upload_file(driver, mini_path)
         time.sleep(1)
         bar_num += 1/num_minis
@@ -255,6 +249,7 @@ def run_selenium(file):
     # upload_bar.progress(bar_num, 'Subiendo vídeos.')
     
     for video in videos:
+        print(video)
         video_path = find_file(video)
         # print(video_path)
         upload_file(driver, video_path)
