@@ -1,3 +1,5 @@
+#Libraries 
+#######################################################################################################################################
 import os
 import streamlit as st
 from selenium import webdriver
@@ -11,7 +13,10 @@ from selenium.webdriver.common.by import By
 from pyexcel_ods import get_data
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
+#######################################################################################################################################
 
+#Streamlit page settings 
+#######################################################################################################################################
 hide_streamlit_style = """
             <style>
             footer {visibility: hidden;}
@@ -47,24 +52,35 @@ JS_DROP_FILE = """
     document.body.appendChild(input);
     return input;
 """
+#######################################################################################################################################
 
+#Functions definition 
+#######################################################################################################################################
+
+
+######################################################
 def drag_and_drop_file(drop_target, path):
     driver = drop_target.parent
     file_input = driver.execute_script(JS_DROP_FILE, drop_target, 0, 0)
     file_input.send_keys(path)
+######################################################
 
+######################################################
 def upload_file(driver, file_path):
     drop_area = driver.find_element('xpath','//*[@id="immersive-container"]/div[1]/div/div')  
     drag_and_drop_file(drop_area, file_path)
+######################################################
     
-
+######################################################
 def update_progress(progress_dict, progress_text):
     lines = progress_text.split('\n')
     for i in range(0, len(lines), 2):
         filename = lines[i]
         progress_dict[filename] = lines[i+1]
     return progress_dict
+######################################################
 
+######################################################
 def get_file_path(file):
 
     # miniaturas = pd.read_excel(r'\\cancer\Material_Definitivo\telerin\THUMBNAILS\00_Catálogo Miniaturas.xlsx')
@@ -101,17 +117,17 @@ def get_file_path(file):
         miscelaneas_match = miscelaneas[miscelaneas['Nombre_Archivo'] == file]
         if not miscelaneas_match.empty:
             return miscelaneas_match['Path'].values[0]
-    
-    # st.error('No se pudo encontrar el arhivo ' + file)
+######################################################
 
-
+ 
+######################################################
 def find_file(filename):
     # Check in specific folders first
     specific_folders = [
-        r'\\cancer\Material_Definitivo\telerin\THUMBNAILS',
-        r'\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones',
-        r'\\cancer\Material_Definitivo\telerin\COLECCIONES\Canciones sueltas',
-        r'\\cancer\Material_Definitivo\telerin\THUMBNAILS\Cleo y Cuquín T01'
+        r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Thumbs',
+        r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Episodios sueltos',
+        r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Canciones sueltas',
+        r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Colecciones'
         ]
     for folder in specific_folders:
         for file in os.listdir(folder):
@@ -123,13 +139,6 @@ def find_file(filename):
     
     # If not found in specific folders and file trackers, walk the root directory
     root_dirs = [
-        r'\\cancer\Material_Definitivo\telerin\SUPERCANAL',
-        r'\\cancer\Material_Definitivo\telerin\SING ALONG',
-        r'\\cancer\Material_Definitivo\telerin\SHORTS TT',
-        r'\\cancer\Material_Definitivo\telerin\COLECCIONES_2023',
-        r'\\cancer\Material_Definitivo\telerin\CCYT_VM',
-        r'\\cancer\Material_Definitivo\telerin\Cuquines (EP)',
-        r'\\cancer\Material_Definitivo\telerin\CLEO & CUQUIN\CC_EPISODIOS\04_IMAGEN\EPISODIOS SIN INTRO NI CREDITOS'
         ]
     for root_dir in root_dirs:
         for dirpath, dirnames, filenames in os.walk(root_dir):
@@ -137,27 +146,14 @@ def find_file(filename):
                 return os.path.join(dirpath, filename)
             
     st.error('No se pudo encontrar el arhivo ' + file)
-    # print('error')
+
     return None
+######################################################
 
-
+######################################################
 def run_selenium(file):
     name = str()
     distrib_df = pd.read_excel(file)
-    
-    # with webdriver.Chrome(options=options) as driver:
-    # options = Options()
-    # options.add_argument("--headless=new")
-    # options.add_argument("--no-sandbox")
-    # options.add_argument("--disable-dev-shm-usage")
-    # options.add_argument("--disable-gpu")
-    # options.add_argument("--disable-features=NetworkService")
-    # options.add_argument("--window-size=1920x1080")
-    # options.add_argument("--disable-features=VizDisplayCompositor")
-    # options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/116.0.5845.110')
-    
-    # driver = webdriver.Chrome(options=options, service=ChromeDriverManager().install())
-    # driver.get('https://www.youtube.com/')
     
     #################################################################################################################
     #ALEJANDRO'S 
@@ -175,8 +171,13 @@ def run_selenium(file):
     #################################################################################################################
     
     #################################################################################################################
+    
     service_ = Service( service_route)
+    
     #################################################################################################################
+    
+    #################################################################################################################
+    
     options = Options()
     options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
@@ -186,14 +187,14 @@ def run_selenium(file):
     options.add_argument("--window-size=1920x1080")
     options.add_argument("--disable-features=VizDisplayCompositor")
     options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/116.0.5845.110')
-    
-    # driver = webdriver.Chrome(options=options) 
     driver = webdriver.Chrome(options=options, service=service_)
-    # driver = webdriver.Chrome(options=options, service=ChromeDriverManager().install())
+    
     
     driver.get('https://www.youtube.com/')
     
-    # cookies = pickle.load(open(r"C:\Users\pablo.perezmartin\Documents\cleoycuquin\Automatizacion\pkls\cookies_cyber.pkl", "rb"))
+    #################################################################################################################
+    
+    
     try:
         cookies = pickle.load(open(r"C:\Users\pablo.perezmartin\Documents\cleoycuquin\Automatizacion\pkls\cookies_cyber.pkl", "rb"))
     except:
@@ -211,8 +212,6 @@ def run_selenium(file):
     driver.get('https://studio.youtube.com/owner/iHywrp4i6tV0ZP3a3-_GZA/delivery/packages?o=iHywrp4i6tV0ZP3a3-_GZA')
     
     driver.find_element('xpath','//*[@id="validate-upload-button"]').click() # Validar y Subir
-    
-    # upload_file(driver,os.path.join(r'C:\Users\pablo.perezmartin\Documents\cleoycuquin\Automatizacion\temp',final_filename)) # Subir el excel
     upload_file(driver,os.path.join(r'A:\Automatizacion\temp',final_filename)) # Subir el excel
     time.sleep(5)
     progress = {}
@@ -246,8 +245,9 @@ def run_selenium(file):
     num_minis = len(minis)
     upload_bar = st.progress(bar_num, 'Subiendo miniaturas.')
     for mini in minis:
-        # print(mini)
+        print(mini)
         mini_path = find_file(mini)
+        # print()
         upload_file(driver, mini_path)
         time.sleep(1)
         bar_num += 1/num_minis
@@ -263,6 +263,7 @@ def run_selenium(file):
     # upload_bar.progress(bar_num, 'Subiendo vídeos.')
     
     for video in videos:
+        print(video)
         video_path = find_file(video)
         # print(video_path)
         upload_file(driver, video_path)
@@ -271,7 +272,7 @@ def run_selenium(file):
         upload_bar.progress(min(bar_num,0.99), 'Subiendo vídeos.')
     
     progreso_archivos = WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="expand-button"]')))
-    while progreso_archivos.text != 'Uploads complete':
+    while progreso_archivos.text not in ['Uploads complete', 'Subidas completadas']:
         progreso_archivos = WebDriverWait(driver, 1).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="expand-button"]')))
         pass
     
@@ -307,7 +308,7 @@ def run_selenium(file):
         
         # time.sleep(60)
         progreso_archivos = WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="expand-button"]')))
-        while progreso_archivos.text not in ['Uploads complete', 'Subidas completadas']:
+        while progreso_archivos.text != 'Uploads complete':
             progreso_archivos = WebDriverWait(driver, 1).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="expand-button"]')))
             pass
         time.sleep(5)
@@ -328,7 +329,12 @@ def run_selenium(file):
     upload_bar.empty()
              
     return name
+######################################################
 
+#######################################################################################################################################
+
+#Deployment 
+#######################################################################################################################################
 
 if __name__ == "__main__":
     st.title('Distribución de Contenido')
@@ -385,3 +391,5 @@ if __name__ == "__main__":
             os.remove(os.path.join(r'A:\Automatizacion\temp',final_filename))
         else:
             st.error('Formato de archivo no soportado. Inténtalo con un excel/ods/csv.')
+            
+#######################################################################################################################################
