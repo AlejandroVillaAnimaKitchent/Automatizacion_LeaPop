@@ -158,24 +158,19 @@ def run_selenium(file):
     #################################################################################################################
     #ALEJANDRO'S 
     
-    service_route =  r'C:\Users\alejandro.villa\.wdm\drivers\chromedriver\win64\116.0.5845.188\chromedriver.exe'
-
+    Alejo_driver = r'C:/Users/alejandro.villa/.wdm/drivers/chromedriver/win64/119.0.6045.106/chromedriver-win32/chromedriver.exe'
 
     #################################################################################################################
 
     #################################################################################################################
     #PABLO'S
 
-    #service_route = r'C:\Users\pablo.perezmartin\.wdm\drivers\chromedriver\win64\116.0.5845.97\chromedriver-win32\chromedriver.exe'
+    Pablo_driver = r'C:\\Users\\pablo.perezmartin\\.wdm\\drivers\\chromedriver\\win64\\118.0.5993.70\\chromedriver-win32/chromedriver.exe'
 
     #################################################################################################################
     
     #################################################################################################################
-    
-    service_ = Service( service_route)
-    
-    #################################################################################################################
-    
+    #service_ = Service( service_route)
     #################################################################################################################
     
     options = Options()
@@ -187,8 +182,18 @@ def run_selenium(file):
     options.add_argument("--window-size=1920x1080")
     options.add_argument("--disable-features=VizDisplayCompositor")
     options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/116.0.5845.110')
-    driver = webdriver.Chrome(options=options, service=service_)
     
+    # driver = webdriver.Chrome(options=options) 
+    try: 
+        service_route =Alejo_driver
+        service_ = Service(service_route)
+        driver = webdriver.Chrome(options=options, service=service_)
+    except:
+        service_route = Pablo_driver
+        service_ = Service( service_route)
+        driver = webdriver.Chrome(options=options, service=service_)
+        
+    # driver = webdriver.Chrome(options=options, service=ChromeDriverManager().install())
     
     driver.get('https://www.youtube.com/')
     
