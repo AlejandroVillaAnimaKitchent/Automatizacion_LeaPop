@@ -465,24 +465,26 @@ if __name__ == "__main__":
         
     if final:
         
-        # options = Options()
-        # # options.add_argument("--headless=new")
-        # options.add_argument("--no-sandbox")
-        # options.add_argument("--disable-dev-shm-usage")
-        # options.add_argument("--disable-gpu")
-        # options.add_argument("--disable-features=NetworkService")
-        # options.add_argument("--window-size=1920x1080")
-        # options.add_argument("--disable-features=VizDisplayCompositor")
-        # options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/116.0.5845.110')
+        #################################################################################################################
+        #ALEJANDRO'S 
         
-        # # driver = webdriver.Chrome(options=options) 
-        # driver = webdriver.Chrome(options=options, service=ChromeDriverManager().install())
+        Alejo_driver = r'C:/Users/alejandro.villa/.wdm/drivers/chromedriver/win64/119.0.6045.106/chromedriver-win32/chromedriver.exe'
+
+        #################################################################################################################
+
+        #################################################################################################################
+        #PABLO'S
+
+        Pablo_driver = r'C:\\Users\\pablo.perezmartin\\.wdm\\drivers\\chromedriver\\win64\\118.0.5993.70\\chromedriver-win32/chromedriver.exe'
+
+        #################################################################################################################
         
+        #################################################################################################################
+        #service_ = Service( service_route)
+        #################################################################################################################
         
-        
-        service_ = Service(r'C:\Users\pablo.perezmartin\.wdm\drivers\chromedriver\win64\116.0.5845.97\chromedriver-win32\chromedriver.exe')
         options = Options()
-        # options.add_argument("--headless=new")
+        options.add_argument("--headless=new")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--disable-gpu")
@@ -492,11 +494,19 @@ if __name__ == "__main__":
         options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/116.0.5845.110')
         
         # driver = webdriver.Chrome(options=options) 
-        driver = webdriver.Chrome(options=options, service=service_)
+        try: 
+            service_route =Alejo_driver
+            service_ = Service(service_route)
+            driver = webdriver.Chrome(options=options, service=service_)
+        except:
+            service_route = Pablo_driver
+            service_ = Service( service_route)
+            driver = webdriver.Chrome(options=options, service=service_)
+            
         # driver = webdriver.Chrome(options=options, service=ChromeDriverManager().install())
         
         driver.get('https://www.youtube.com/')
-        # cookies = pickle.load(open(r"C:\Users\pablo.perezmartin\Documents\cleoycuquin\Automatizacion\pkls\cookies_cyber.pkl", "rb"))
+        
         try:
             cookies = pickle.load(open(r"C:\Users\pablo.perezmartin\Documents\cleoycuquin\Automatizacion\pkls\cookies_cyber.pkl", "rb"))
         except:
