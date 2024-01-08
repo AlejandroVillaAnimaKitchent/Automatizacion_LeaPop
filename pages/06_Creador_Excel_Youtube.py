@@ -284,9 +284,17 @@ def ask_file():
             if 'promo' not in str.lower(Name):
                 # print(Name)
                 related_thumbs = df_thumbs[df_thumbs['Title Spanish'] == Name]
-                non_na_thumbs = related_thumbs.stack().dropna().tolist() #.drop(['Season','Number'], axis=1)
-                #st.write(non_na_thumbs[0])
-                thumb_dict[non_na_thumbs[0]] =non_na_thumbs[1:] 
+                
+                try:
+                    non_na_thumbs = related_thumbs.stack().dropna().tolist()
+                    #st.write(Name)
+                    #st.write(non_na_thumbs)
+                    thumb_dict[non_na_thumbs[0]] =non_na_thumbs[1:] 
+                except: 
+                    st.error("CUIDADO !!!!!! NO PROCEDA")
+                    st.error("Para el video '{}' No se encontraron Thumbs".format(Name))
+                    st.error("Revise por inconsistencias en la columna 'Title Spanish' en la base de datos \\CANCER\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miniaturas_LeaPop.csv")
+                    st.error('O consulte a su programador de confianza.')
                 
                 
         # Los Tags 
@@ -441,6 +449,7 @@ def main():
     parameter_choice()
     keywords_request()
     time_request()
+    conditions =[False,False,False,False]
     try:
         create_titles()
         create_descs()
@@ -466,11 +475,22 @@ def main():
                 except Exception as e:
                     st.error(e)
         else:
-           st.error('Recuerde elegir todas las opciones')
+           st.error('Recuerde elegir todas las opciones.')
+           if conditions[1]==False: 
+               st.info('Deber elegir una categoría para tu canal.')
+           elif conditions[2]==False:
+               st.info('Debes elegir un idioma para tu canal.')
+           elif len(keywords_df) ==0:
+               st.info('Debes elegir keywords para los videos de tu canal.')
+           elif  len(horas_df)==0:
+               st.info('Debes elegir horarios para los videos de tu canal.')
+           #print(conditions)
+               
                
            
     except Exception as e:
-        st.write(e)
+        print(e)
+        #st.write(e)
         st.info('Necesitas añadir un excel o eleger colecciones de vídeos mediante las pestañas anteriores.')
 
 #############################################################################################################################
@@ -482,4 +502,3 @@ if __name__ == "__main__":
    main()
    
 #############################################################################################################################
-
