@@ -39,7 +39,7 @@ else:
 #intro_check = len(collect_df[collect_df['Name']=='Intro'])>0
 
 
-categories = ['Ninguna','Canciones','Pops','Miscelaneas']
+categories = ['Ninguna','Canciones','Pops','Miscelaneas','Sing Along']
 languages ={'Español':'ES','Portugués':'PT'}
 
 

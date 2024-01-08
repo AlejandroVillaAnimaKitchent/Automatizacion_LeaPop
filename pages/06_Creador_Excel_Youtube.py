@@ -29,7 +29,8 @@ csv_file = df_channel = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCION
 
 ##################################################################################### 
 channels = df_channel.set_index('Título del canal')['Canal'].to_dict()
-channels_cont = pd.read_csv(r"\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Contador_colecciones.csv")     
+# channels_cont = pd.read_csv(r"\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Contador_colecciones.csv") 
+channels_cont = pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Contador_colecciones.csv",  encoding='latin1')
 categories = ['Ninguna','Music','Education']
 languages ={'Ninguno':'Ninguno','Español':'ES','Portugués':'PT'}
 Promos_Intro_df = pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Promos_Intro_LeaPop.csv")
@@ -43,7 +44,7 @@ df_dict = df_thumbs.apply(lambda row: row.dropna().values, axis=1).to_dict()
 all_thumbs = {values[0]: list(values[1:]) for values in df_dict.values()}
     
 ##################################################################################### 
-# Tags and descriptions 
+# Tags and descriptions
 
 tags_description = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Tags_LeaPop.csv')
 
@@ -274,7 +275,7 @@ def ask_file():
         for Name in videos_df: 
             
             if 'promo' not in str.lower(Name):
-                # print(Name)
+                print(Name)
                 related_thumbs = df_thumbs[df_thumbs['Title Spanish'] == Name]
                 non_na_thumbs = related_thumbs.stack().dropna().tolist() #.drop(['Season','Number'], axis=1)
                 #st.write(non_na_thumbs[0])
@@ -290,7 +291,8 @@ def ask_file():
             tags_pieza = []
             # st.text(videos)
             for video in videos:
-                # print(video)
+                print(video)
+                # st.dataframe(selected_videos[selected_videos.Filename==video])
                 ips_ = list(selected_videos[selected_videos.Filename==video].Tag_IP.values)[0]
                 ips = ips_.split('|')
                 
@@ -424,10 +426,6 @@ def main():
     
     elif file_or_not =='No': ask_file()
     
-    
-    
-
-#####################################################################################
     # Header and everything else
     
     st.subheader('Escoge los parámetros con los cuáles desea crear la hoja de Cálculo')
@@ -453,9 +451,9 @@ def main():
                 file_path = f'\\\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\\Youtube_Excels\\{channel_choice_windows}_{col_number}.xlsx'
     
                 try:
-                    df.to_excel(file_path, header=True, index=False, engine='xlsxwriter')
-                    st.success(f'Se ha creado el archivo {channel_choice_windows}_{col_number}.xlsx  en la ubicación')
-                    st.success(r'\\'+f'\\cancer\\Material_Definitivo\\LEA\\COLECCIONES\\ Lea&Pop Databases\\Youtube_Excels\\{channel_choice_windows}_{col_number}.xlsx')
+                    df.to_excel(file_path.replace(' |',''), header=True, index=False, engine='xlsxwriter')
+                    st.success(f'Se ha creado el archivo {channel_choice_windows}_{col_number}.xlsx  en la ubicación'.replace(' |',''))
+                    st.success(r'\\'+f'\\cancer\\Material_Definitivo\\LEA\\COLECCIONES\\ Lea&Pop Databases\\Youtube_Excels\\{channel_choice_windows}_{col_number}.xlsx'.replace(' |',''))
                 except Exception as e:
                     st.error(e)
         else:
@@ -463,8 +461,11 @@ def main():
                
            
     except Exception as e:
-        st.write(e)
+        print('Error:')
+        print(e)
+        # print(all(conditions))
         st.info('Necesitas añadir un excel o eleger colecciones de vídeos mediante las pestañas anteriores.')
+        # print(conditions)
         
 #####################################################################################
 

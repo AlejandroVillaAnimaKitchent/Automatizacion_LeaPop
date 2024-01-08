@@ -65,45 +65,6 @@ def update_progress(progress_dict, progress_text):
         progress_dict[filename] = lines[i+1]
     return progress_dict
 
-def get_file_path(file):
-
-    # miniaturas = pd.read_excel(r'\\cancer\Material_Definitivo\telerin\THUMBNAILS\00_Catálogo Miniaturas.xlsx')
-    cuquines = pd.read_excel(r'\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Cuquines_DB.xls')
-    canciones = pd.read_excel(r'\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Canciones_DB.xls')
-    promos = pd.read_excel(r'\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Promos_DB.xls')
-    miscelaneas = pd.read_excel(r'\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Miscelaneas_DB.xls')
-    individual = pd.read_csv(r'\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Canciones_Sueltas.csv')
-    
-    # print(file)
-    # Match a las miniaturas
-    if file.endswith('.png'):
-        file_path = os.path.join(r'\\cancer\Material_Definitivo\telerin\THUMBNAILS',file)
-        return file_path
-    
-    # Match a los vídeos
-    else:
-        individual_match = individual[individual['Filename'] == file]
-        if not individual_match.empty:
-            return individual_match['Path'].values[0]
-        
-        cuquines_match = cuquines[cuquines['Nombre_Archivo'] == file]
-        if not cuquines_match.empty:
-            return cuquines_match['Path'].values[0]
-        
-        canciones_match = canciones[canciones['Nombre_Archivo'] == file]
-        if not canciones_match.empty:
-            return canciones_match['Path'].values[0]
-        
-        promos_match = promos[promos['Nombre_Archivo'] == file]
-        if not promos_match.empty:
-            return promos_match['Path'].values[0]
-        
-        miscelaneas_match = miscelaneas[miscelaneas['Nombre_Archivo'] == file]
-        if not miscelaneas_match.empty:
-            return miscelaneas_match['Path'].values[0]
-    
-    # st.error('No se pudo encontrar el arhivo ' + file)
-
 
 def find_file(filename):
     # Check in specific folders first
@@ -116,10 +77,9 @@ def find_file(filename):
     for folder in specific_folders:
         for file in os.listdir(folder):
             if file == filename:
+                # print(os.path.join(folder, filename))
                 return os.path.join(folder, filename)
     
-    # If not found in the main folders search in the docs.
-    get_file_path(filename)
     
     # If not found in specific folders and file trackers, walk the root directory
     root_dirs = [
@@ -162,7 +122,7 @@ def run_selenium(file):
     #################################################################################################################
     #PABLO'S
 
-    service_ = Service(r'C:\Users\pablo.perezmartin\.wdm\drivers\chromedriver\win64\116.0.5845.97\chromedriver-win32\chromedriver.exe')
+    Pablo_driver = r'C:\Users\pablo.perezmartin\.wdm\drivers\chromedriver\win64\119.0.6045.105\chromedriver.exe'
 
     #################################################################################################################
     options = Options()
@@ -175,6 +135,8 @@ def run_selenium(file):
     options.add_argument("--disable-features=VizDisplayCompositor")
     options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/116.0.5845.110')
     
+    service_route = Pablo_driver
+    service_ = Service( service_route)
     # driver = webdriver.Chrome(options=options) 
     driver = webdriver.Chrome(options=options, service=service_)
     # driver = webdriver.Chrome(options=options, service=ChromeDriverManager().install())

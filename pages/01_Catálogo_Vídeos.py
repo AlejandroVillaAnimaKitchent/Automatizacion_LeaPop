@@ -25,12 +25,12 @@ df = df[df['Activo']=='Si']
 idioma = st.selectbox('Elige el idioma de los vídeos', ('Español','Portugués'), index=0)
 
 #[canciones, cuquines,otros] =st.tabs(['Canciones','Cuquines', 'Otros'])
-[canciones, Pops] =st.tabs(['Canciones','Pops'])
+[canciones, pops, sa] =st.tabs(['Canciones','Pops','Sing Alongs'])
 
 if idioma!='Ninguno':
     selected_videos =pd.DataFrame(columns =list(df.columns))
     with canciones:
-        canciones_df = df[(df['Language']==idioma) & (df['Category']=='Music')]
+        canciones_df = df[(df['Language']==idioma) & (df['Category']=='Music') & (df['Version']!='LP')]
         num_columns1 = 4
         num_rows1 = math.ceil(len(canciones_df) / num_columns1)
         for row1 in range(num_rows1):
@@ -42,7 +42,7 @@ if idioma!='Ninguno':
                    # selected_videos = selected_videos.append(canciones_df[canciones_df['Name'] == item1])
                    selected_videos = pd.concat([selected_videos, canciones_df[canciones_df['Name'] == item1]], ignore_index=True)
 
-    with Pops:                 
+    with pops:                 
         pops_df = df[(df['Language']==idioma) & (df['Category']=='Education')]
         num_columns2 = 4
         num_rows2 = math.ceil(len(pops_df) / num_columns2)
@@ -54,7 +54,17 @@ if idioma!='Ninguno':
                 checkbox_state = columns2[col_idx2].checkbox(item2,key=str(col_idx2) + item2+str(row_items2))
                 if checkbox_state:
                     selected_videos = pd.concat([selected_videos, pops_df[pops_df['Name'] == item2]], ignore_index=True)
-
+    with sa:
+        sa_df = df[(df['Language']==idioma) & (df['Category']=='Music') & (df['Version']=='LP')]
+        num_columns1 = 4
+        num_rows1 = math.ceil(len(sa_df) / num_columns1)
+        for row1 in range(num_rows1):
+            row_items1 = sa_df['Name'][row1*num_columns1: (row1+1)*num_columns1]
+            columns1 = st.columns(num_columns1)
+            for col_idx1, item1 in enumerate(row_items1):
+                checkbox_state1 = columns1[col_idx1].checkbox(item1,key=str(col_idx1) + item1+str(row_items1))
+                if checkbox_state1:
+                   selected_videos = pd.concat([selected_videos, sa_df[sa_df['Name'] == item1]], ignore_index=True)
         
     st.dataframe(selected_videos[['Path','Filename','Name','Language','Category','Tag_IP','Tag_pieza']], use_container_width=True)
     
