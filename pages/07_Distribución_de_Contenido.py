@@ -213,17 +213,19 @@ def run_selenium(file):
 
     driver.get('https://www.youtube.com/')
 
-
-    driver.get('https://studio.youtube.com/owner/iHywrp4i6tV0ZP3a3-_GZA/delivery/packages?o=iHywrp4i6tV0ZP3a3-_GZA')
-    
-    driver.find_element('xpath','//*[@id="validate-upload-button"]').click() # Validar y Subir
-    upload_file(driver,os.path.join(r'A:\Automatizacion\temp',final_filename)) # Subir el excel
-    time.sleep(5)
-    progress = {}
-    progress_list = WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="progress-list"]')))
-    progress_text = progress_list.text
-    s = progress_text
-    lines = s.split('\n')
+    try: 
+        driver.get('https://studio.youtube.com/owner/iHywrp4i6tV0ZP3a3-_GZA/delivery/packages?o=iHywrp4i6tV0ZP3a3-_GZA')
+        
+        driver.find_element('xpath','//*[@id="validate-upload-button"]').click() # Validar y Subir
+        upload_file(driver,os.path.join(r'A:\Automatizacion\temp',final_filename)) # Subir el excel
+        time.sleep(5)
+        progress = {}
+        progress_list = WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="progress-list"]')))
+        progress_text = progress_list.text
+        s = progress_text
+        lines = s.split('\n')
+    except: raise Exception('Los cookies no se cargaron correctamente, comuníquese con su programador de confianza.')
+        
     
     for i in range(0, len(lines), 2):
         filename = lines[i]
@@ -323,7 +325,8 @@ def run_selenium(file):
         progress = update_progress(progress, progress_text)  
         
     if not fail:
-        driver.find_element('xpath','//*[@id="process-package-button"]').click() # Procesar paquete
+        
+        WebDriverWait(driver, 40).until(EC.element_to_be_clickable(By.XPATH,'//*[@id="process-package-button"]')).click() # Procesar paquete
         st.balloons()
         info.info("""
                 Se han subido todos los archivos correctamente y se va a publicar el contenido. 
