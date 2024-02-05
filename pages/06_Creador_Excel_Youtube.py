@@ -25,7 +25,7 @@ collect_df =pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop D
 ##################################################################################### 
 #Channels to include Provisionary solution
 
-csv_file = df_channel = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\canales_excel_yt.csv')
+df_channel = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\canales_excel_yt.csv')
 
 ##################################################################################### 
 channels = df_channel.set_index('Título del canal')['Canal'].to_dict()
@@ -275,7 +275,7 @@ def ask_file():
         for Name in videos_df: 
             
             if 'promo' not in str.lower(Name):
-                print(Name)
+                # print(Name)
                 related_thumbs = df_thumbs[df_thumbs['Title Spanish'] == Name]
                 non_na_thumbs = related_thumbs.stack().dropna().tolist() #.drop(['Season','Number'], axis=1)
                 #st.write(non_na_thumbs[0])
@@ -290,9 +290,9 @@ def ask_file():
             tags_IP = []
             tags_pieza = []
             # st.text(videos)
+            # st.dataframe(selected_videos)
             for video in videos:
-                print(video)
-                # st.dataframe(selected_videos[selected_videos.Filename==video])
+                # print(video)
                 ips_ = list(selected_videos[selected_videos.Filename==video].Tag_IP.values)[0]
                 ips = ips_.split('|')
                 
@@ -446,7 +446,8 @@ def main():
                 index = channels_cont[channels_cont['Título del canal'] ==channel_choice].index[0]
                 channels_cont.loc[index,'Contador colecciones'] +=1
                 col_number =channels_cont.loc[index,'Contador colecciones']
-                channels_cont.to_csv(r"\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Contador_colecciones.csv", index=False)
+                # channels_cont.to_csv(r"\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Contador_colecciones.csv", index=False)
+                channels_cont.to_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Contador_colecciones.csv", index=False)
                 channel_choice_windows = channel_choice.replace(':','').replace('!','') # Omit dangerous characters for file naming.
                 file_path = f'\\\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\\Youtube_Excels\\{channel_choice_windows}_{col_number}.xlsx'
     

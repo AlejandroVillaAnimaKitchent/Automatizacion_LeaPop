@@ -89,7 +89,7 @@ def find_file(filename):
             if filename in filenames:
                 return os.path.join(dirpath, filename)
             
-    st.error('No se pudo encontrar el arhivo ' + file)
+    # st.error('No se pudo encontrar el arhivo ' + file)
     # print('error')
     return None
 
@@ -170,11 +170,11 @@ def run_selenium(file):
     progress_text = progress_list.text
     s = progress_text
     lines = s.split('\n')
-    
+    # print(lines)
     for i in range(0, len(lines), 2):
         filename = lines[i]
         progress[filename] = lines[i+1]
-        
+
     
     while len(set(list(progress.values())))>1:
         file_errors = [k for k, v in progress.items() if v != '100% uploaded']
@@ -193,7 +193,7 @@ def run_selenium(file):
     num_minis = len(minis)
     upload_bar = st.progress(bar_num, 'Subiendo miniaturas.')
     for mini in minis:
-        print(mini)
+        # print(mini)
         mini_path = find_file(mini)
         # print()
         upload_file(driver, mini_path)
@@ -201,7 +201,7 @@ def run_selenium(file):
         bar_num += 1/num_minis
         upload_bar.progress(min(bar_num,0.99), 'Subiendo miniaturas.')
     
-    upload_bar.progress(1.0, 'Miniaturas subidas.')
+    upload_bar.progress(0.0, 'Miniaturas subidas.')
 
     
     # Subir vídeos 
@@ -213,10 +213,14 @@ def run_selenium(file):
     for video in videos:
         print(video)
         video_path = find_file(video)
+        
+        # print(video_path)
+        # if len(video)>=54:
+        #     video_path = find_file(video[:46]+'.mp4')
         # print(video_path)
         upload_file(driver, video_path)
         time.sleep(1)
-        bar_num += num_videos
+        bar_num += 1/num_videos
         upload_bar.progress(min(bar_num,0.99), 'Subiendo vídeos.')
     
     progreso_archivos = WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="expand-button"]')))
