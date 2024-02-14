@@ -2,3 +2,4 @@ temp/
 pkls/*
 streamlit_image_select
 __pycache__
+/pages/08_Reclamaciones_de_Copyright.py
