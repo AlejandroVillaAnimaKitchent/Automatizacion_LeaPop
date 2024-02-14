@@ -158,7 +158,7 @@ def run_selenium(file):
     #################################################################################################################
     #ALEJANDRO'S 
     
-    Alejo_driver = r'C:/Users/alejandro.villa/.wdm/drivers/chromedriver/win64/119.0.6045.106/chromedriver-win32/chromedriver.exe'
+    Alejo_driver = r'C:\Users\alejandro.villa\.cache\selenium\chromedriver\win64\120.0.6099.109\chromedriver.exe'
 
     #################################################################################################################
 
