@@ -36,7 +36,7 @@ csv_file = df_channel = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCION
 
 ##################################################################################### 
 channels = df_channel.set_index('Título del canal')['Canal'].to_dict()
-channels_cont = pd.read_csv(r"\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Contador_colecciones.csv")     
+channels_cont = pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Contador_colecciones.csv")     
 categories = ['Ninguna','Music','Education']
 languages ={'Ninguno':'Ninguno','Español':'ES','Portugués':'PT'}
 Promos_Intro_df = pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Promos_Intro_LeaPop.csv")
