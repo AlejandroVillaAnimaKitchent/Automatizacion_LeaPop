@@ -61,13 +61,22 @@ tags_description = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Le
 #############################################################################################################################
 
 #FUNCTION THAT CREATES THE DATABASE WITH JUST THE DATA NEEDED 
-
+##########################
 def filenames_fun(category_chosen,idioma):
     return collect_df.loc[(collect_df['Language']==idioma) & (collect_df['Category']==category_chosen),['Filename','Name','Components','Tag_IP','Tag_pieza']]   
+##########################
 
-#####################################################################################
+#FUNCTION TO CONCATENATE THE LIST TO BE ABLE TO REPEAT VIDEOS IF NECESSARY 
+#########################
+def concatenate_list(lista,len_otra_lista): 
+    repetitions = len_otra_lista // len(lista)
+    remaining_slots = len_otra_lista % len(lista)
+    new_list = lista*repetitions +lista[:remaining_slots]
+    return new_list
+#########################
+
 #FUNCTION TO CHOOSE THE PARAMETERS NEEDED FOR THE CREATION OF THE EXCEL FILE 
-
+##########################
 def parameter_choice():
     global channel_choice, idioma, category_chosen, lengua
     global videos_df, titles_df, labels_df
@@ -79,12 +88,11 @@ def parameter_choice():
     category_chosen = col1.selectbox('Seleccione una categoria',categories)
     idioma = col2.selectbox('Seleccione el idioma de sus vídeos',languages.keys())
     lengua = st.radio('Desea que los títulos y las descripciones de sus vídeos sean en inglés',('No','Si'))
-
-    #st.write('Seleccione los vídeos que desea publicar en su canal')
+##########################
     
-#####################################################################################    
+ 
 #FUNCTION TO REQUEST THE DAY AND  HOURS  OF PUBLICATION
-       
+##########################       
 def time_request():
     global selected_date, horas, horas_df, length_df 
     horas_df=list()
@@ -111,10 +119,11 @@ def time_request():
             
     except:
         pass
- 
-#####################################################################################
-#Function designed to request the selection of keywords from a lake of keywords used in the past by the team.
+##########################
+    
 
+#Function designed to request the selection of keywords from a lake of keywords used in the past by the team.
+##########################
 def keywords_request():
     global tag_musical, tag_educativo, tag_general
     global keywords_df
@@ -161,38 +170,70 @@ def keywords_request():
     else:
         # keywords_df = ''.join(str(i)+',' for i in key_words)
         keywords_df = ','.join(str(i) for i in key_words)
+##########################
         
-#####################################################################################        
+       
 #FUNCTION TO CREATE THE TITLES OF THE VIDEOS 
-
+##########################
 def create_titles():
+    
     global titles_df
-    words = ' ' + st.text_input('Escriba una frase adicional que acompañe a los títulos (i.e. "y más canciones infantiles con Lea y Pop")')
+    
+    double_title= st.radio('Desea usar el título del primer y segundo vídeo de la colección',('No','Si'))
+    
+    #Function to preprocess the titles from the videos
+    #########################
+    def new_title_fun(videos):
+        if lengua =='Si': nombre='Name_english'
+        else: nombre='Name_Language'
+        #Tries And Except to save us if there's no Name_Language
+        ##################
+        try: title_1 = selected_videos[selected_videos.Filename==videos[0]][nombre].values[0]
+        except: title_1 = selected_videos[selected_videos.Filename==videos[0]]['Name'].values[0]
+        try: title_2 = selected_videos[selected_videos.Filename==videos[1]][nombre].values[0]
+        except: title_2 = selected_videos[selected_videos.Filename==videos[1]]['Name'].values[0]
+        ##################
+        
+        #Title of the first two or not
+        ###########
+        if double_title =='Si': return title_1+' | '+title_2
+        else: return title_1
+        ###########
+    #########################
+    
+    #To ask for addtional phrases for the titles and list them to coincide with the total of vidoes available. 
+    #########################
+    sufijos= ['era', 'da', 'era', 'ta', 'ta', 'ta', 'ma', 'va', 'na', 'ma',
+                         'va', 'ma', 'va', 'na', 'ma', 'va', 'ma', 'va', 'na', 'va']  #Sufixes for spanish 'til #20
+    num_cols = int( st.number_input('Establezca la cantidad de frases adicionales que acompañaran sus títulos',step=1, value=1, format="%d"))
+    cols = st.columns(num_cols)
+    words= [' ' + col.text_input(f'Escriba la {str(cols.index(col)+1)+ sufijos[cols.index(col)]} frase', key=50+num_cols +cols.index(col)) for col in cols]
+    wors = concatenate_list(words,len(list(collections_selected.columns)))
+    #########################
+    
     titles_df = []
-    nombre =str()
-    if lengua =='Si':
-        nombre='Name_english'
-    else: 
-        nombre='Name_Language'
     if words:
+        
         for col in collections_selected.columns:
+            
+            index = collections_selected.columns.get_loc(col)
             videos= [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
-            try: 
-                titles_df.append(selected_videos[selected_videos.Filename==videos[0]][nombre].values[0]+words)
-            except:
-                titles_df.append(selected_videos[selected_videos.Filename==videos[0]]['Name'].values[0]+words)
+            new_title = new_title_fun(videos) + wors[index]
+            if len(new_title)<100: titles_df.append(new_title)
+            else: titles_df.append(new_title_fun(videos))
+
     else:
+        
         st.info('Va a proceder con los títulos de los vídeos tal cual.')
         for col in collections_selected.columns:
+            
             videos= [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
-            try: 
-                titles_df.append(selected_videos[selected_videos.Filename==videos[0]][nombre].values[0])
-            except:
-                titles_df.append(selected_videos[selected_videos.Filename==videos[0]]['Name'].values[0])
+            titles_df.append(new_title_fun(videos))
+#########################
 
-#####################################################################################
+
 #FUNCTION TO CREATE THE DESCRIPTIONS OF THE VIDEOS 
-
+##########################
 def create_descs():
     global desc_df
     st.write('Elija una(s) descripción(es) para sus vídeos y/o escribala(s)')
@@ -216,19 +257,10 @@ def create_descs():
     else:
         pass
     desc_df = [desc for col in  collections_selected.columns]
-
-#####################################################################################    
-#FUNCTION TO CONCATENATE THE LIST TO BE ABLE TO REPEAT VIDEOS IF NECESSARY 
-
-def concatenate_list(lista): 
-    repetitions = length_df // len(lista)
-    remaining_slots = length_df % len(lista)
-    new_list = lista*repetitions +lista[:remaining_slots]
-    return new_list
-
-#####################################################################################    
+##########################
+      
 #FUNCTION TO CREATE THE FINAL DF THAT WILL BE USED TO CREATE THE EXCEL 
-
+##########################
 def create_df():
     df=pd.DataFrame(columns=['filename','channel','custom_id','add_asset_labels','title','description',
                              'keywords','spoken_language','caption_file','caption_language','category','privacy','notify_subscribers','start_time','end_time',
@@ -246,19 +278,21 @@ def create_df():
     df['usage_policy'] ='Monetize in all countries'
     df['enable_content_id'] ='no'
     df['is_made_for_kids'] ='yes'
-    df['title']= concatenate_list(titles_df)
-    df['description']= concatenate_list(desc_df)
+    df['title']= concatenate_list(titles_df,length_df)
+    df['description']= concatenate_list(desc_df,length_df)
     df['keywords'] = keywords_df
     df['keywords'] = df['keywords'].str.replace(',','|')
     df['start_time']= horas_df
     thumbs_labels_creator()
-    df['add_asset_labels'] = concatenate_list(asset_labels)
-    df['custom_thumbnail'] = concatenate_list(custom_thumbs)
+    df['add_asset_labels'] = concatenate_list(asset_labels,length_df)
+    df['custom_thumbnail'] = concatenate_list(custom_thumbs,length_df)
     st.dataframe(df)
     return df
+##########################
 
-#####################################################################################
+
 #FUNCTION TO ASK FOR A FILE IF CREADOR ALEATORIO DE COLECCIONES WAS NOT USED 
+##########################
 def ask_file():
     global  videos_df, collections_selected, selected_videos, thumb_dict, asset_labels
     file = st.file_uploader("Suba el Archivo Excel de sus colecciones", type=["xlsx", "xls","ods"])
@@ -321,15 +355,16 @@ def ask_file():
                 tags_IP += ips
                 tags_pieza += piezas
             asset_labels.append('|'.join(list(set(tags_IP+tags_pieza))))
+##########################
 
-#####################################################################################
-
+##########################
 def No_file(): 
     global  videos_df, collections_selected, selected_videos, thumb_dict
+##########################
     
-#####################################################################################
-#FUNCTION TO CREATE THUMBS AND LABELS LIST 
 
+#FUNCTION TO CREATE THUMBS AND LABELS LIST 
+##########################
 def thumbs_labels_creator(): 
     global custom_thumbs, asset_labels
     custom_thumbs = []
@@ -350,13 +385,15 @@ def thumbs_labels_creator():
                 videofilename = videos[0]
                 video = selected_videos[selected_videos.Filename==videofilename]['Name'].values[0]
                 custom_thumbs.append(random.choice(all_thumbs[video]))
+##########################
     
-#############################################################################################################################
+
            
 
 #DEPLOYMENT THE APP USING ALL THE PREVIOUSLY DEFINED FUNCTIONS, DATAFRAMES AND DICTIONARIES.
 #############################################################################################################################
- 
+
+###########################################
 def main():
     global videos_df, collections_selected, selected_videos, thumb_dict, asset_labels
     
@@ -408,7 +445,6 @@ def main():
 
     thumb_dict = thumbs_by_song|thumbs_by_pop
     
-#####################################################################################
     #If The user wants to utilize the collection previously done:
     No_file() 
     if file_or_not =='Si': 
@@ -439,10 +475,6 @@ def main():
     
     elif file_or_not =='No': ask_file()
     
-    
-    
-
-#####################################################################################
     # Header and everything else
     
     st.subheader('Escoge los parámetros con los cuáles desea crear la hoja de Cálculo')
@@ -492,13 +524,12 @@ def main():
         print(e)
         #st.write(e)
         st.info('Necesitas añadir un excel o eleger colecciones de vídeos mediante las pestañas anteriores.')
+###########################################
 
 #############################################################################################################################
 
 #############################################################################################################################
-
 if __name__ == "__main__":
 
    main()
-   
 #############################################################################################################################
