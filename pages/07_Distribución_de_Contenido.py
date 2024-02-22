@@ -1,5 +1,3 @@
-#Libraries 
-#######################################################################################################################################
 import os
 import streamlit as st
 from selenium import webdriver
@@ -13,10 +11,9 @@ from selenium.webdriver.common.by import By
 from pyexcel_ods import get_data
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
-#######################################################################################################################################
+from chromedriver_py import binary_path # this will get you the path variable
 
-#Streamlit page settings 
-#######################################################################################################################################
+
 hide_streamlit_style = """
             <style>
             footer {visibility: hidden;}
@@ -52,8 +49,6 @@ JS_DROP_FILE = """
     document.body.appendChild(input);
     return input;
 """
-#######################################################################################################################################
-
 #Functions definition 
 #######################################################################################################################################
 
@@ -155,24 +150,6 @@ def run_selenium(file):
     name = str()
     distrib_df = pd.read_excel(file)
     
-    #################################################################################################################
-    #ALEJANDRO'S 
-    
-    Alejo_driver = r'C:\Users\alejandro.villa\.cache\selenium\chromedriver\win64\120.0.6099.109\chromedriver.exe'
-
-    #################################################################################################################
-
-    #################################################################################################################
-    #PABLO'S
-
-    Pablo_driver = r'C:\\Users\\pablo.perezmartin\\.wdm\\drivers\\chromedriver\\win64\\118.0.5993.70\\chromedriver-win32/chromedriver.exe'
-
-    #################################################################################################################
-    
-    #################################################################################################################
-    #service_ = Service( service_route)
-    #################################################################################################################
-    
     options = Options()
     options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
@@ -181,27 +158,16 @@ def run_selenium(file):
     options.add_argument("--disable-features=NetworkService")
     options.add_argument("--window-size=1920x1080")
     options.add_argument("--disable-features=VizDisplayCompositor")
-    options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/116.0.5845.110')
+    options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.6099.130')
     
-    # driver = webdriver.Chrome(options=options) 
-    try: 
-        service_route =Alejo_driver
-        service_ = Service(service_route)
-        driver = webdriver.Chrome(options=options, service=service_)
-    except:
-        service_route = Pablo_driver
-        service_ = Service( service_route)
-        driver = webdriver.Chrome(options=options, service=service_)
-        
-    # driver = webdriver.Chrome(options=options, service=ChromeDriverManager().install())
+    svc = webdriver.ChromeService(executable_path=binary_path)
+    driver = webdriver.Chrome(options=options, service=svc)
     
     driver.get('https://www.youtube.com/')
-    
-    #################################################################################################################
-    
+
     
     try:
-        cookies = pickle.load(open(r"C:\Users\pablo.perezmartin\Documents\cleoycuquin\Automatizacion\pkls\cookies_cyber.pkl", "rb"))
+        cookies = pickle.load(open(r"C:\Users\pablo.perezmartin\Documents\cleoycuquin\Cookies\pkls\cookies_pablo.pkl", "rb"))
     except:
         try:
             cookies = pickle.load(open(r"C:\Users\alejandro.villa\Documents\Codigos\Automatizacion\pkls\cookies_cyber.pkl", "rb"))
@@ -217,7 +183,7 @@ def run_selenium(file):
         driver.get('https://studio.youtube.com/owner/iHywrp4i6tV0ZP3a3-_GZA/delivery/packages?o=iHywrp4i6tV0ZP3a3-_GZA')
         
         driver.find_element('xpath','//*[@id="validate-upload-button"]').click() # Validar y Subir
-        upload_file(driver,os.path.join(r'A:\Automatizacion\temp',final_filename)) # Subir el excel
+        upload_file(driver,os.path.join(r'A:\Automatizacion_LEA\temp',final_filename)) # Subir el excel
         time.sleep(5)
         progress = {}
         progress_list = WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="progress-list"]')))
@@ -236,10 +202,10 @@ def run_selenium(file):
         file_errors = [k for k, v in progress.items() if v != '100% uploaded']
         if len(file_errors)>0:
             info.info('Se ha producido un error con el archivo de metadata. Reintentando.')
-            if 'alejandro.villa' in service_route:
-                upload_file(driver,os.path.join(r'C:\Users\alejandro.villa\Documents\Codigos\Automatizacion\temp',final_filename))
-            elif 'pablo.perezmartin' in service_route:
-                upload_file(driver,os.path.join(r'C:\Users\pablo.perezmartin\Documents\cleoycuquin\Automatizacion\temp',final_filename))
+            try:
+                upload_file(driver,os.path.join(r'A:\Automatizacion_LEA\temp',final_filename))
+            except:
+                upload_file(driver,os.path.join(r'A:\Automatizacion_LEA\temp',final_filename))
             time.sleep(2)
             progress_list = driver.find_element('xpath','//*[@id="progress-list"]')
             progress_text = progress_list.text
@@ -363,21 +329,21 @@ if __name__ == "__main__":
             #     f.write(file.getbuffer())
             df = pd.read_excel(file)
             # df.to_excel(os.path.join(r'C:\Users\pablo.perezmartin\Documents\cleoycuquin\Automatizacion\temp',final_filename), index=False)
-            df.to_excel(os.path.join(r'A:\Automatizacion\temp',final_filename), index=False)
+            df.to_excel(os.path.join(r'A:\Automatizacion_LEA\temp',final_filename), index=False)
                 
         elif file_details["FileType"] == "application/vnd.ms-excel":
             st.write('Convirtiendo el archivo .xls a .xlsx')
             df = pd.read_excel(file)
             final_filename = file.name.replace('.xls','_temp.xlsx')
             # df.to_excel(os.path.join(r'C:\Users\pablo.perezmartin\Documents\cleoycuquin\Automatizacion\temp',final_filename), index=False)
-            df.to_excel(os.path.join(r'A:\Automatizacion\temp',final_filename), index=False)
+            df.to_excel(os.path.join(r'A:\Automatizacion_LEA\temp',final_filename), index=False)
             
         elif file_details["FileType"] == "text/csv":
             st.write('Convirtiendo el archivo .csv a .xlsx')
             df = pd.read_csv(file)
             final_filename = file.name.replace('.csv','_temp.xlsx')
             # df.to_excel(os.path.join(r'C:\Users\pablo.perezmartin\Documents\cleoycuquin\Automatizacion\temp',final_filename), index=False)
-            df.to_excel(os.path.join(r'A:\Automatizacion\temp',final_filename), index=False)
+            df.to_excel(os.path.join(r'A:\Automatizacion_LEA\temp',final_filename), index=False)
                 
         elif file_details["FileType"] == "application/vnd.oasis.opendocument.spreadsheet":
             st.write('Convirtiendo primera hoja del archivo .ods a .xlsx')
@@ -386,7 +352,7 @@ if __name__ == "__main__":
             df = pd.DataFrame(sheet_data[1:], columns=sheet_data[0])
             final_filename = file.name.replace('.ods','_temp.xlsx')
             # df.to_excel(os.path.join(r'C:\Users\pablo.perezmartin\Documents\cleoycuquin\Automatizacion\temp',final_filename), index=False)         
-            df.to_excel(os.path.join(r'A:\Automatizacion\temp',final_filename), index=False)         
+            df.to_excel(os.path.join(r'A:\Automatizacion_LEA\temp',final_filename), index=False)         
         
         else:
             correct_file = False
@@ -396,7 +362,7 @@ if __name__ == "__main__":
             info = st.info('Archivo recibido. Se va a intentar publicar el contenido, no cierres la página hasta que acabe.')
             run_selenium(file)
             # os.remove(os.path.join(r'C:\Users\pablo.perezmartin\Documents\cleoycuquin\Automatizacion\temp',final_filename))
-            os.remove(os.path.join(r'A:\Automatizacion\temp',final_filename))
+            os.remove(os.path.join(r'A:\Automatizacion_LEA\temp',final_filename))
         else:
             st.error('Formato de archivo no soportado. Inténtalo con un excel/ods/csv.')
             
