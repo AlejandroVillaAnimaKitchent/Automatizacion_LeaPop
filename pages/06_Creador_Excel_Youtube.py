@@ -210,7 +210,7 @@ def create_titles():
     try: 
         cols = st.columns(num_cols)
         words = [' ' + col.text_input(f'Escriba la {str(cols.index(col)+1)+ sufijos[cols.index(col)]} frase', key=50+num_cols +cols.index(col)) for col in cols]
-    except: # num_cols == 0: 
+    except:  
         words=[' ']
         st.info('Va a proceder con los títulos de los vídeos sin frases adicionales.')
     
