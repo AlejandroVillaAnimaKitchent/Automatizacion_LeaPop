@@ -4,6 +4,7 @@
 import streamlit as st
 import pandas as pd
 from collections import deque
+import unicodedata
 #################################################################################################################
 
 #Page Settings
@@ -226,7 +227,10 @@ if (num_collect > 0) & (num_videos>0):
 
     
     st.dataframe(df_final, use_container_width=True, hide_index=True)
-    nombre_archivo =st.text_input('Escriba el nombre del archivo excel a crear (no hace falta la extensión)')
+    # unicodedata.normalize is used to normalize the string to NFC (Normalization Form Canonical Composition). 
+    ########################################################
+    nombre_archivo =unicodedata.normalize('NFC',st.text_input('Escriba el nombre del archivo excel a crear (no hace falta la extensión)'))
+    ########################################################
     creador =st.button('Crear Excel colecciones')
     
     if creador and nombre_archivo:
