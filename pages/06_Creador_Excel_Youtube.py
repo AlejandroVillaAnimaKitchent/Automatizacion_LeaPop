@@ -205,7 +205,6 @@ def create_titles():
     #########################
     sufijos= ['era', 'da', 'era', 'ta', 'ta', 'ta', 'ma', 'va', 'na', 'ma',
                          'va', 'ma', 'va', 'na', 'ma', 'va', 'ma', 'va', 'na', 'va']  #Sufixes for spanish 'til #20
-    
     num_cols = int( st.number_input('Establezca la cantidad de frases adicionales que acompañaran sus títulos',step=1, value=0, format="%d"))
     try: 
         cols = st.columns(num_cols)
@@ -217,8 +216,7 @@ def create_titles():
     wors = concatenate_list(words,len(list(collections_selected.columns)))
     #########################
     
-    titles_df = []
-      
+    titles_df = []  
     for col in collections_selected.columns:
         
         index = collections_selected.columns.get_loc(col)
