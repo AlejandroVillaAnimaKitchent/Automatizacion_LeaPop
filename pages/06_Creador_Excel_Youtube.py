@@ -205,30 +205,28 @@ def create_titles():
     #########################
     sufijos= ['era', 'da', 'era', 'ta', 'ta', 'ta', 'ma', 'va', 'na', 'ma',
                          'va', 'ma', 'va', 'na', 'ma', 'va', 'ma', 'va', 'na', 'va']  #Sufixes for spanish 'til #20
-    num_cols = int( st.number_input('Establezca la cantidad de frases adicionales que acompañaran sus títulos',step=1, value=1, format="%d"))
-    cols = st.columns(num_cols)
-    words= [' ' + col.text_input(f'Escriba la {str(cols.index(col)+1)+ sufijos[cols.index(col)]} frase', key=50+num_cols +cols.index(col)) for col in cols]
+    
+    num_cols = int( st.number_input('Establezca la cantidad de frases adicionales que acompañaran sus títulos',step=1, value=0, format="%d"))
+    try: 
+        cols = st.columns(num_cols)
+        words = [' ' + col.text_input(f'Escriba la {str(cols.index(col)+1)+ sufijos[cols.index(col)]} frase', key=50+num_cols +cols.index(col)) for col in cols]
+    except: # num_cols == 0: 
+        words=[' ']
+        st.info('Va a proceder con los títulos de los vídeos sin frases adicionales.')
+    
     wors = concatenate_list(words,len(list(collections_selected.columns)))
     #########################
     
     titles_df = []
-    if words:
+      
+    for col in collections_selected.columns:
         
-        for col in collections_selected.columns:
-            
-            index = collections_selected.columns.get_loc(col)
-            videos= [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
-            new_title = new_title_fun(videos) + wors[index]
-            if len(new_title)<100: titles_df.append(new_title)
-            else: titles_df.append(new_title_fun(videos))
+        index = collections_selected.columns.get_loc(col)
+        videos= [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
+        new_title = new_title_fun(videos) + wors[index]
+        if len(new_title)<100: titles_df.append(new_title)
+        else: titles_df.append(new_title_fun(videos))
 
-    else:
-        
-        st.info('Va a proceder con los títulos de los vídeos tal cual.')
-        for col in collections_selected.columns:
-            
-            videos= [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
-            titles_df.append(new_title_fun(videos))
 #########################
 
 
