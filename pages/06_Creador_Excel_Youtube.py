@@ -37,8 +37,8 @@ csv_file = df_channel = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCION
 ##################################################################################### 
 channels = df_channel.set_index('Título del canal')['Canal'].to_dict()
 channels_cont = pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Contador_colecciones.csv")     
-categories = ['Ninguna','Music','Education']
-languages ={'Ninguno':'Ninguno','Español':'ES','Portugués':'PT'}
+categories = ['Music','Education']
+languages ={'Español':'ES','Portugués':'PT'}
 Promos_Intro_df = pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Promos_Intro_LeaPop.csv")
 
 #####################################################################################
@@ -121,34 +121,37 @@ def time_request():
         pass
 ##########################
     
-
 #Function designed to request the selection of keywords from a lake of keywords used in the past by the team.
-##########################
+#########################
 def keywords_request():
-    global tag_musical, tag_educativo, tag_general
-    global keywords_df
+    
+    global tag_musical, tag_educativo, tag_general, keywords_dict, keywords_df
+    
     keywords=list()
     tag_musical =[]
     tag_general =[]
     tag_educativo =[]
-    if lengua =='Si':
-        tag_musical = tags_description['Tags_Music_EN'].dropna().tolist()
-        tag_general = tags_description['Tags_General_EN'].dropna().tolist()
-        tag_educativo =tags_description['Tags_Educativo_EN'].dropna().tolist()
-    else: 
-        if idioma == 'Español':
-                tag_musical = tags_description['Tags_Music_ES'].dropna().tolist()
-                tag_general = tags_description['Tags_General_ES'].dropna().tolist()
-                tag_educativo =tags_description['Tags_Educativo_ES'].dropna().tolist()
-        elif idioma =='Portugués':
-            tag_musical = tags_description['Tags_Music_PT'].dropna().tolist()
-            tag_general = tags_description['Tags_General_PT'].dropna().tolist()
-            tag_educativo =tags_description['Tags_Educativo_PT'].dropna().tolist()
-        
+    keywords_dict ={}
+    
+    ################################################
+    Tags_Music ='Tags_Music_'+languages[idioma]
+    Tags_General ='Tags_General_'+languages[idioma]
+    Tags_Educativo ='Tags_Educativo_'+languages[idioma]
+    
+    tag_musical = tags_description[Tags_Music].dropna().tolist()
+    tag_general = tags_description[Tags_General].dropna().tolist()
+    tag_educativo =tags_description[Tags_Educativo].dropna().tolist()
+    
     if category_chosen =='Music':
-        keywords = tag_musical + tag_general
+        keywords_dict = { tag : tag for tag  in tag_musical + tag_general}
     elif category_chosen =='Education':
-        keywords = tag_educativo + tag_general 
+        keywords_dict = { tag : tag for tag  in tag_educativo + tag_general}
+     #################################################
+
+            
+    #################################################   
+           
+    keywords = list(keywords_dict.keys())
         
     key_words = list()
     st.write('Los vídeos incluirán tags predeterminadas, pero puedes añadir más a continuación.')
@@ -158,49 +161,91 @@ def keywords_request():
         ro_items = keywords[ro*num_cols: (ro+1)*num_cols]
         cols = st.columns(num_cols)
         for cols_idx, items in enumerate(ro_items):
-           #st.write(cols_idx)
-            #st.write(ro_items)
             checkbox_sta = cols[cols_idx].checkbox(items,key=items + str(cols_idx) +str(ro_items))
             if checkbox_sta:
                 key_words.append(items)
+                
+    key_words = [keywords_dict[x] for x in key_words]
 
     words = st.text_input('Escriba alguna(s) palabra(s) adicional(es) si así lo desea (separadas por comas).')
     if words:
         keywords_df = words +','+','.join(str(i) for i in key_words)
     else:
-        # keywords_df = ''.join(str(i)+',' for i in key_words)
         keywords_df = ','.join(str(i) for i in key_words)
-##########################
+    #########################        
+    
+###############################################################################################
         
-       
-#FUNCTION TO CREATE THE TITLES OF THE VIDEOS 
-##########################
+# #FUNCTION TO CREATE THE TITLES OF THE VIDEOS  VERSION 2.0 
+###############################################################################################
+
 def create_titles():
     
     global titles_df
     
     double_title= st.radio('Desea usar el título del primer y segundo vídeo de la colección',('No','Si'))
     
-    #Function to preprocess the titles from the videos
-    #########################
-    def new_title_fun(videos):
-        if lengua =='Si': nombre='Name_english'
-        else: nombre='Name_Language'
-        #Tries And Except to save us if there's no Name_Language
-        ##################
-        try: title_1 = selected_videos[selected_videos.Filename==videos[0]][nombre].values[0]
-        except: title_1 = selected_videos[selected_videos.Filename==videos[0]]['Name'].values[0]
-        try: title_2 = selected_videos[selected_videos.Filename==videos[1]][nombre].values[0]
-        except: title_2 = selected_videos[selected_videos.Filename==videos[1]]['Name'].values[0]
-        ##################
-        
-        #Title of the first two or not
-        ###########
-        if double_title =='Si': return title_1+' | '+title_2
-        else: return title_1
-        ###########
-    #########################
+    ############### To take the titles of a given video ###############
+    #titles_to_use =['Name_Language', 'Second_Name_Language','Third_Name_Language','Fourth_Name_Language']
+    titles_to_use =['Name_Language']
+    titles_file = lambda Filename: list(collect_df.loc[collect_df['Filename']==Filename][titles_to_use].dropna(axis=1).values[0])
+    ###################################################################
     
+    ############### To Drop the Intro and/or Promos rows ###############
+    collec = collections_selected[~collections_selected.apply(lambda row: row.isin(Promos_Intro_df['Filename'])).any(axis=1)]
+    collec= collec.reset_index(drop=True)
+    ####################################################################
+    
+    ########### Number of collections given ###########
+    num_collect = len(list(collec.columns))
+    ###################################################
+    
+    ############### Scalable to more titles if needed ###############
+    if double_title =='Si': 
+        if len(collec)>1: upper_limit = 2
+        else: 
+            upper_limit = 1  
+            st.text('Solo hay una componente por colección, se procederá con los títulos para esta ÚNICA componente')
+    else: upper_limit = 1   
+    ################################################################
+    
+    ####### Creates a list of title per row in collec (collecttions_selected without intro/promos) #######     
+    lista_posiciones =[collec.iloc[i].tolist() for i in range(upper_limit)]
+
+    titulos_por_fila =[]
+
+    for i in range(upper_limit):
+        lista_titulos = []
+        lista_videos = lista_posiciones[i]
+    
+        for index ,video in enumerate(lista_videos):
+            title_names = titles_file(video) 
+            indice = (lista_videos[:index].count(video))%len(title_names)
+            lista_titulos.append(title_names[indice])
+    
+        titulos_por_fila.append(lista_titulos)
+    #######################################################################################################
+    
+    ############ Creates the list of titles per position (1st Title,2nd title, etc) ############ 
+    Titulos =[]
+    for i in range(num_collect):
+        title=''
+        j=0
+        while j <upper_limit:
+            if title =='': 
+                title = titulos_por_fila[j][i] 
+                j+=1
+            
+            else:
+                if len(title + ' | '+ titulos_por_fila[j][i])>=100:
+                    break
+                else:
+                    title += ' | '+ titulos_por_fila[j][i]
+                    j+=1
+        Titulos.append(title)
+    ############################################################################################
+    
+        
     #To ask for addtional phrases for the titles and list them to coincide with the total of vidoes available. 
     #########################
     sufijos= ['era', 'da', 'era', 'ta', 'ta', 'ta', 'ma', 'va', 'na', 'ma',
@@ -209,43 +254,43 @@ def create_titles():
     try: 
         cols = st.columns(num_cols)
         words = [' ' + col.text_input(f'Escriba la {str(cols.index(col)+1)+ sufijos[cols.index(col)]} frase', key=50+num_cols +cols.index(col)) for col in cols]
-    except:  
+    except: # num_cols == 0: 
         words=[' ']
         st.info('Va a proceder con los títulos de los vídeos sin frases adicionales.')
+
     
-    wors = concatenate_list(words,len(list(collections_selected.columns)))
+    wors = concatenate_list(words,num_collect)
     #########################
     
-    titles_df = []  
-    for col in collections_selected.columns:
-        
-        index = collections_selected.columns.get_loc(col)
-        videos= [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
-        new_title = new_title_fun(videos) + wors[index]
-        if len(new_title)<100: titles_df.append(new_title)
-        else: titles_df.append(new_title_fun(videos))
-
-#########################
+    ############ Creates the final Titles list for the DF ############
+    titles_df = [Titulos[i]+wors[i] if len(Titulos[i]+wors[i])<100 else Titulos[i] for i in range(num_collect)]
+    ################################################################## 
 
 
+###############################################################################################
+       
 #FUNCTION TO CREATE THE DESCRIPTIONS OF THE VIDEOS 
-##########################
+#########################
 def create_descs():
     global desc_df
+    descriptions = []
     st.write('Elija una(s) descripción(es) para sus vídeos y/o escribala(s)')
-    if lengua=='Si':
-        descriptions = [ tag for tag in tags_description['Description_EN'].tolist() if pd.notna(tag)]
-    else:
-        if idioma == 'Español':
-            descriptions = [ tag for tag in tags_description['Description_ES'].tolist() if pd.notna(tag)]
-        elif idioma == 'Portugués':
-            descriptions = [ tag for tag in tags_description['Description_PT'].tolist() if pd.notna(tag)]
+    
+    #################################################  
+    Description ='Description_'+languages[idioma]
+    
+    descriptions =  tags_description[Description].dropna().tolist()
+    
+    descriptions_dict ={ description : description for description in descriptions}
+    #################################################
+        
+
     desc = str()
     
     for i, des in enumerate(descriptions):
         la_box = st.checkbox(des, key=i + len(str(des)))
         if la_box:
-            desc += des + ' '
+            desc += descriptions_dict[des] + ' '
             
     des = st.text_input('Escriba un complemento a las descripciones escogidas (o su propia descripción si no ha elegido ninguna) para todos los vídeos')
     if des:
@@ -253,7 +298,9 @@ def create_descs():
     else:
         pass
     desc_df = [desc for col in  collections_selected.columns]
-##########################
+#########################
+
+###############################################################################################
       
 #FUNCTION TO CREATE THE FINAL DF THAT WILL BE USED TO CREATE THE EXCEL 
 ##########################
@@ -323,8 +370,7 @@ def ask_file():
                 except: 
                     st.error("CUIDADO !!!!!! NO PROCEDA")
                     st.error("Para el video '{}' No se encontraron Thumbs".format(Name))
-                    st.error("Revise por inconsistencias en la columna 'Title Spanish' en la base de datos \\CANCER\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miniaturas_LeaPop.csv")
-                    st.error('O consulte a su programador de confianza.')
+                    st.error('Consulte a su programador de confianza.')
                 
                 
         # Los Tags 
