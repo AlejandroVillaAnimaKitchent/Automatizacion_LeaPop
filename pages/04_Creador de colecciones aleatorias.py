@@ -235,6 +235,10 @@ if (num_collect > 0) & (num_videos>0):
     
     if creador and nombre_archivo:
         
+        column_lenght_adjustment = lambda column: column[:146] if len(column)>=146 else column
+        
+        df_final.rename(columns= {column :column_lenght_adjustment(column) for column in list(df_final.columns)}, inplace=True)
+        
         st.session_state['collections_selected'] = df_final
         
         df_final.to_excel(f'\\\\cancer\Material_Definitivo\\LEA\\COLECCIONES\\{nombre_archivo}.xlsx',index=False,header=True)
