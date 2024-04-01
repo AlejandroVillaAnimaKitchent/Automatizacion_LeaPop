@@ -46,8 +46,8 @@ Promos_Intro_df = pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea
 
 df_thumbs = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miniaturas_LeaPop.csv')
 df_thumbs = df_thumbs.drop(df_thumbs.columns[[0]], axis=1)
-df_dict = df_thumbs.apply(lambda row: row.dropna().values, axis=1).to_dict()
-all_thumbs = {values[0]: list(values[1:]) for values in df_dict.values()}
+#df_dict = df_thumbs.apply(lambda row: row.dropna().values, axis=1).to_dict()
+#all_thumbs = {values[0]: list(values[1:]) for values in df_dict.values()}
     
 ##################################################################################### 
 # Tags and descriptions 
@@ -59,6 +59,16 @@ tags_description = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Le
 
 #WE WILL DEFINE ALL THE FUNCTIONS TO BE USED IN CREATING THE EXCEL FILE FOR YOUTUBE
 #############################################################################################################################
+
+#FUNCTION TO CREATE THE all_thumbs dictionary using only the selected videos
+############################
+def df_dictionary(selected_videos):
+    global df_thumbs, df_dict
+    df_thumbs = df_thumbs[df_thumbs['Title Spanish'].isin(selected_videos.Name)]
+    df_dict = df_thumbs.apply(lambda row: row.dropna().values, axis=1).to_dict()
+    return  {values[0]: list(values[1:]) for values in df_dict.values()}
+############################
+
 
 #FUNCTION THAT CREATES THE DATABASE WITH JUST THE DATA NEEDED 
 ##########################
@@ -110,7 +120,6 @@ def time_request():
         horas = [col.time_input(f'Seleccione el {str(cols.index(col)+1)+ sufijos[cols.index(col)] }  horario de publicación',default_time, key=cols.index(col)) for col in cols]
         i=0
         while i < length_df:
-            # if i>1 and i%len(horas)==len(horas)-1: selected_date += timedelta(days=1)
             
             if i>1 and i%len(horas)==0: selected_date += timedelta(days=1)
             time_str = datetime.combine(selected_date, horas[i % len(horas)]).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -254,7 +263,7 @@ def create_titles():
     try: 
         cols = st.columns(num_cols)
         words = [' ' + col.text_input(f'Escriba la {str(cols.index(col)+1)+ sufijos[cols.index(col)]} frase', key=50+num_cols +cols.index(col)) for col in cols]
-    except: # num_cols == 0: 
+    except:
         words=[' ']
         st.info('Va a proceder con los títulos de los vídeos sin frases adicionales.')
 
@@ -337,7 +346,7 @@ def create_df():
 #FUNCTION TO ASK FOR A FILE IF CREADOR ALEATORIO DE COLECCIONES WAS NOT USED 
 ##########################
 def ask_file():
-    global  videos_df, collections_selected, selected_videos, thumb_dict, asset_labels
+    global  videos_df, collections_selected, selected_videos, thumb_dict, asset_labels, all_thumbs
     file = st.file_uploader("Suba el Archivo Excel de sus colecciones", type=["xlsx", "xls","ods"])
     if file: 
         collections_selected = pd.read_excel(file)
@@ -351,15 +360,13 @@ def ask_file():
         videos_list = list(set(videos_list))
         selected_videos = collect_df[(collect_df['Filename'].isin(videos_list)) & (collect_df['Components']==1)]
         videos_df = selected_videos.Name
-        #st.dataframe(selected_videos)
-        #st.write(videos_df)
-        #st.dataframe(df_thumbs)
-        # Los Thumbs 
+        
+        all_thumbs =  df_dictionary(selected_videos)
+        
         thumb_dict ={}
         for Name in videos_df: 
             
             if 'promo' not in str.lower(Name):
-                # print(Name)
                 related_thumbs = df_thumbs[df_thumbs['Title Spanish'] == Name]
                 
                 try:
@@ -382,7 +389,7 @@ def ask_file():
             tags_pieza = []
             # st.text(videos)
             for video in videos:
-                # print(video)
+
                 ips_ = list(selected_videos[selected_videos.Filename==video].Tag_IP.values)[0]
                 ips = ips_.split('|')
                 
@@ -437,7 +444,7 @@ def thumbs_labels_creator():
 
 ###########################################
 def main():
-    global videos_df, collections_selected, selected_videos, thumb_dict, asset_labels
+    global videos_df, collections_selected, selected_videos, thumb_dict, asset_labels, all_thumbs
     
     st.title('Creador de Hoja de Cálculo para Canal Youtube')
     
@@ -453,16 +460,14 @@ def main():
     missing = []
     try:
         selected_videos = st.session_state['selected_videos']
-        # selected_videos.columns = selected_videos.iloc[0]
-        # selected_videos = selected_videos.iloc[1:]
         videos_df = selected_videos.Name
+        
+        all_thumbs =  df_dictionary(selected_videos)
     except:
         missing.append('vídeos')
        
     try:
         collections_selected = st.session_state['collections_selected']
-        #collections_selected.columns = collections_selected.iloc[0]
-        #collections_selected = collections_selected.iloc[1:]
     except:
         missing.append('colecciones')
         
@@ -496,14 +501,11 @@ def main():
             videos = [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
             tags_IP = []
             tags_pieza = []
-            #st.dataframe(collections_selected)
             #st.text(videos)
             for video in videos:
                 ips_ = list(selected_videos[selected_videos.Filename==video].Tag_IP.values)[0]
                 #st.write(video)
                 # st.write(ips_)
-                # ty = type(ips_)
-                # st.write(str(ty))
                 ips = ips_.split('|')
                 
                 piezas_ = list(selected_videos[selected_videos.Filename==video].Tag_pieza.values)[0]
@@ -533,8 +535,7 @@ def main():
         if all(conditions):
             df=create_df()
             if st.button('Crear Hoja De Cálculo'):
-                # print(channel_choice)
-                # st.dataframe(channels_cont)
+            
                 index = channels_cont[channels_cont['Título del canal'] ==channel_choice].index[0]
                 channels_cont.loc[index,'Contador colecciones'] +=1
                 col_number =channels_cont.loc[index,'Contador colecciones']
@@ -558,13 +559,12 @@ def main():
                st.info('Debes elegir keywords para los videos de tu canal.')
            elif  len(horas_df)==0:
                st.info('Debes elegir horarios para los videos de tu canal.')
-           #print(conditions)
+          
                
                
            
     except Exception as e:
         print(e)
-        #st.write(e)
         st.info('Necesitas añadir un excel o eleger colecciones de vídeos mediante las pestañas anteriores.')
 ###########################################
 
