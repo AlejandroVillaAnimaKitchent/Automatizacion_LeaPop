@@ -321,7 +321,7 @@ def create_df():
     
     ##############################################
     #Very Important for videos_df assigment to be first
-    df['filename']= concatenate_list([item+'.mp4' for item in collections_selected.columns])
+    df['filename']= concatenate_list([item+'.mp4' for item in collections_selected.columns],length_df)
     ##############################################
     df['channel'] = channels[channel_choice]
     df['category'] = category_chosen
@@ -539,7 +539,7 @@ def main():
                 index = channels_cont[channels_cont['Título del canal'] ==channel_choice].index[0]
                 channels_cont.loc[index,'Contador colecciones'] +=1
                 col_number =channels_cont.loc[index,'Contador colecciones']
-                channels_cont.to_csv(r"\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Contador_colecciones.csv", index=False)
+                channels_cont.to_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Contador_colecciones.csv", index=False)
                 channel_choice_windows = channel_choice.replace(':','').replace('!','') # Omit dangerous characters for file naming.
                 file_path = f'\\\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\\Youtube_Excels\\{channel_choice_windows}_{col_number}.xlsx'
     
@@ -565,6 +565,7 @@ def main():
            
     except Exception as e:
         print(e)
+        st.write(e)
         st.info('Necesitas añadir un excel o eleger colecciones de vídeos mediante las pestañas anteriores.')
 ###########################################
 
