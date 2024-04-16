@@ -64,7 +64,12 @@ tags_description = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Le
 ############################
 def df_dictionary(selected_videos):
     global df_thumbs, df_dict
+    # print(selected_videos.Name)
     df_thumbs = df_thumbs[df_thumbs['Title Spanish'].isin(selected_videos.Name)]
+    
+    # print('-----------------------------------------')
+    # print(df_thumbs)
+    # print('-----------------------------------------')
     df_dict = df_thumbs.apply(lambda row: row.dropna().values, axis=1).to_dict()
     return  {values[0]: list(values[1:]) for values in df_dict.values()}
 ############################
@@ -301,7 +306,7 @@ def create_descs():
         if la_box:
             desc += descriptions_dict[des] + ' '
             
-    des = st.text_input('Escriba un complemento a las descripciones escogidas (o su propia descripción si no ha elegido ninguna) para todos los vídeos')
+    des = st.text_area('Escriba un complemento a las descripciones escogidas (o su propia descripción si no ha elegido ninguna) para todos los vídeos')
     if des:
         desc += ' ' + des
     else:
@@ -361,6 +366,7 @@ def ask_file():
         selected_videos = collect_df[(collect_df['Filename'].isin(videos_list)) & (collect_df['Components']==1)]
         videos_df = selected_videos.Name
         
+        # print(selected_videos)
         all_thumbs =  df_dictionary(selected_videos)
         
         thumb_dict ={}
@@ -373,7 +379,7 @@ def ask_file():
                     non_na_thumbs = related_thumbs.stack().dropna().tolist()
                     #st.write(Name)
                     #st.write(non_na_thumbs)
-                    thumb_dict[non_na_thumbs[0]] =non_na_thumbs[1:] 
+                    thumb_dict[non_na_thumbs[0]] = non_na_thumbs[1:] 
                 except: 
                     st.error("CUIDADO !!!!!! NO PROCEDA")
                     st.error("Para el video '{}' No se encontraron Thumbs".format(Name))
@@ -421,18 +427,22 @@ def thumbs_labels_creator():
     for j in range(length_df):
         col = collections_selected.columns[j%len(collections_selected.columns)]
         if len(thumb_dict.keys())>0:
-                videos = [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
-                videofilename = videos[0]
-                video = selected_videos[selected_videos.Filename==videofilename]['Name'].values[0]
-                if len(thumb_dict[video])>0:
-                    custom_thumbs.append(random.choice(thumb_dict[video]))
-                else:
-                    custom_thumbs.append(random.choice(all_thumbs[video]))
+            # print(thumb_dict.keys())
+            videos = [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
+            videofilename = videos[0]
+            video = selected_videos[selected_videos.Filename==videofilename]['Name'].values[0]
+            if video in thumb_dict.keys() and len(thumb_dict[video])>0:
+                custom_thumbs.append(random.choice(thumb_dict[video]))
+            else:
+                # print(all_thumbs)
+                custom_thumbs.append(random.choice(all_thumbs[video]))
         else:
             for col in collections_selected.columns:
                 videos = [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
                 videofilename = videos[0]
                 video = selected_videos[selected_videos.Filename==videofilename]['Name'].values[0]
+                # print('video')
+                # print(all_thumbs)
                 custom_thumbs.append(random.choice(all_thumbs[video]))
 ##########################
     
@@ -564,7 +574,7 @@ def main():
                
            
     except Exception as e:
-        print(e)
+        # print(e)
         st.write(e)
         st.info('Necesitas añadir un excel o eleger colecciones de vídeos mediante las pestañas anteriores.')
 ###########################################

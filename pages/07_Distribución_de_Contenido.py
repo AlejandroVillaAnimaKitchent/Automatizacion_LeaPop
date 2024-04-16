@@ -170,7 +170,7 @@ def run_selenium(file):
     #################################################################################################################
     
     options = Options()
-    #options.add_argument("--headless=new")
+    options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu")
@@ -217,9 +217,9 @@ def run_selenium(file):
     
         # upload_file(driver,os.path.join(r'C:\Users\pablo.perezmartin\Documents\cleoycuquin\Automatizacion\temp',final_filename)) # Subir el excel
         try: 
-            upload_file(driver,os.path.join(r'A:\Automatizacion\temp',final_filename)) # Subir el excel
+            upload_file(driver,os.path.join(r'A:\Automatizacion_LEA\temp',final_filename)) # Subir el excel
         except: 
-            upload_file(driver,os.path.join(r'A:\Automatizacion\temp',final_filename)) # Subir el excel
+            upload_file(driver,os.path.join(r'A:\Automatizacion_LEA\temp',final_filename)) # Subir el excel
         time.sleep(5)
         progress = {}
         progress_list = WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="progress-list"]')))
