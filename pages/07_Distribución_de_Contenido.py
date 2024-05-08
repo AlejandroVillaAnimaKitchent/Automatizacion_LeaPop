@@ -140,15 +140,34 @@ def find_file(filename):
             if filename in filenames:
                 return os.path.join(dirpath, filename)
             
-    st.error('No se pudo encontrar el arhivo ' + file)
+    st.error('No se pudo encontrar el archivo ' + file)
 
     return None
 ######################################################
+
 
 ######################################################
 def run_selenium(file):
     name = str()
     distrib_df = pd.read_excel(file)
+    
+    #################################################################################################################
+    #ALEJANDRO'S 
+    
+    Alejo_driver = r'C:\Users\alejandro.villa\.cache\selenium\chromedriver\win64\123.0.6312.105\chromedriver.exe'
+
+    #################################################################################################################
+
+    #################################################################################################################
+    #PABLO'S
+
+    Pablo_driver = r'C:\Users\pablo.perezmartin\.wdm\drivers\chromedriver\win64\119.0.6045.105\chromedriver.exe'
+
+    #################################################################################################################
+    
+    #################################################################################################################
+    #service_ = Service( service_route)
+    #################################################################################################################
     
     options = Options()
     options.add_argument("--headless=new")
@@ -158,19 +177,31 @@ def run_selenium(file):
     options.add_argument("--disable-features=NetworkService")
     options.add_argument("--window-size=1920x1080")
     options.add_argument("--disable-features=VizDisplayCompositor")
-    options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.6099.130')
-    
-    svc = webdriver.ChromeService(executable_path=binary_path)
-    driver = webdriver.Chrome(options=options, service=svc)
-    
-    driver.get('https://www.youtube.com/')
+    options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.130 Safari/537.36')
 
     
+    # driver = webdriver.Chrome(options=options) 
+    try: 
+        service_route =Alejo_driver
+        service_ = Service(service_route)
+        driver = webdriver.Chrome(options=options, service=service_)
+    except:
+        svc = webdriver.ChromeService(executable_path=binary_path)
+        # driver = webdriver.Chrome(service=svc)
+        # service_route = Pablo_driver
+        # service_ = Service( service_route)
+        driver = webdriver.Chrome(options=options, service=svc)
+        
+    # driver = webdriver.Chrome(options=options, service=ChromeDriverManager().install())
+    
+    driver.get('https://www.youtube.com/')
+    
     try:
-        cookies = pickle.load(open(r"C:\Users\pablo.perezmartin\Documents\cleoycuquin\Cookies\pkls\cookies_pablo.pkl", "rb"))
+        cookies = pickle.load(open(r"C:\Users\alejandro.villa\Documents\Codigos\Automatizacion_LeaPop\pkls\cookies_cyber.pkl", "rb"))
+        
     except:
         try:
-            cookies = pickle.load(open(r"C:\Users\alejandro.villa\Documents\Codigos\Automatizacion\pkls\cookies_cyber.pkl", "rb"))
+            cookies = pickle.load(open(r"C:\Users\pablo.perezmartin\Documents\cleoycuquin\Cookies\pkls\cookies_pablo.pkl", "rb"))
         except:
             raise Exception("No se encontraron cookies disponibles.")
             
@@ -179,32 +210,38 @@ def run_selenium(file):
 
     driver.get('https://www.youtube.com/')
 
-    try: 
+    try:
         driver.get('https://studio.youtube.com/owner/iHywrp4i6tV0ZP3a3-_GZA/delivery/packages?o=iHywrp4i6tV0ZP3a3-_GZA')
-        
+    
         driver.find_element('xpath','//*[@id="validate-upload-button"]').click() # Validar y Subir
-        upload_file(driver,os.path.join(r'A:\Automatizacion_LEA\temp',final_filename)) # Subir el excel
+    
+        # upload_file(driver,os.path.join(r'C:\Users\pablo.perezmartin\Documents\cleoycuquin\Automatizacion\temp',final_filename)) # Subir el excel
+        try: 
+            upload_file(driver,os.path.join(r'A:\Automatizacion_LEA\temp',final_filename)) # Subir el excel
+        except: 
+            upload_file(driver,os.path.join(r'A:\Automatizacion_LEA\temp',final_filename)) # Subir el excel
         time.sleep(5)
         progress = {}
         progress_list = WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="progress-list"]')))
         progress_text = progress_list.text
         s = progress_text
         lines = s.split('\n')
-    except: raise Exception('Los cookies no se cargaron correctamente, comuníquese con su programador de confianza.')
-        
-    
+    except Exception as e:  
+        raise Exception('Los cookies no se cargaron correctamente, comuníquese con su programador de confianza.')
+        print(e)
+        st.write(e)
     for i in range(0, len(lines), 2):
         filename = lines[i]
         progress[filename] = lines[i+1]
         
     
     while len(set(list(progress.values())))>1:
-        file_errors = [k for k, v in progress.items() if v != '100% uploaded']
+        file_errors = [k for k, v in progress.items() if v not in ['100% uploaded','100% Subido']]
         if len(file_errors)>0:
             info.info('Se ha producido un error con el archivo de metadata. Reintentando.')
             try:
                 upload_file(driver,os.path.join(r'A:\Automatizacion_LEA\temp',final_filename))
-            except:
+            except: 
                 upload_file(driver,os.path.join(r'A:\Automatizacion_LEA\temp',final_filename))
             time.sleep(2)
             progress_list = driver.find_element('xpath','//*[@id="progress-list"]')
@@ -220,7 +257,6 @@ def run_selenium(file):
     for mini in minis:
         print(mini)
         mini_path = find_file(mini)
-        # print()
         upload_file(driver, mini_path)
         time.sleep(1)
         bar_num += 1/num_minis
@@ -233,22 +269,21 @@ def run_selenium(file):
     videos = set(distrib_df.filename.values)
     num_videos = len(videos)
     bar_num = 0.0
-    # upload_bar.progress(bar_num, 'Subiendo vídeos.')
+    upload_bar.progress(bar_num, 'Subiendo vídeos.')
     
     for video in videos:
-        print(video)
         video_path = find_file(video)
-        # print(video_path)
+        print(video_path)
         upload_file(driver, video_path)
         time.sleep(1)
-        bar_num += num_videos
+        bar_num += 1/num_videos
         upload_bar.progress(min(bar_num,0.99), 'Subiendo vídeos.')
     
     progreso_archivos = WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="expand-button"]')))
     while progreso_archivos.text not in ['Uploads complete', 'Subidas completadas']:
         progreso_archivos = WebDriverWait(driver, 1).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="expand-button"]')))
         pass
-    
+
     upload_bar.progress(1.0, 'Vídeos y miniaturas subidos, comprobando si hay errores.')
     
     # Comprobación final de que se han subido todos bien.
@@ -265,7 +300,7 @@ def run_selenium(file):
         progress[filename] = lines[i+1]
     
     while len(set(list(progress.values())))>1:
-        file_errors = [k for k, v in progress.items() if v != '100% uploaded']
+        file_errors = [k for k, v in progress.items() if v not in ['100% uploaded','100% Subido']]
         info.info('Se han encontrado errores con {} archivo(s). Reintentando.'.format(len(file_errors)))
         for file in file_errors:
             file_path = find_file(file)
@@ -275,13 +310,13 @@ def run_selenium(file):
         errors+=1
         if errors>10:
             file_string = '\n'.join(file_errors)
-            st.error('Los siguientes archivos parecen dar errores, por favor revísalos antes de interntarlo de nuevo: \n'+file_string)
+            st.error('Los siguientes archivos parecen dar errores, por favor revísalos antes de intentarlo de nuevo: \n'+file_string)
             fail = True
             break
         
         # time.sleep(60)
         progreso_archivos = WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="expand-button"]')))
-        while progreso_archivos.text != 'Uploads complete':
+        while progreso_archivos.text not in ['Uploads complete', 'Subidas completadas']:
             progreso_archivos = WebDriverWait(driver, 1).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="expand-button"]')))
             pass
         time.sleep(5)
@@ -289,21 +324,30 @@ def run_selenium(file):
         progress_list = driver.find_element('xpath','//*[@id="progress-list"]')
         progress_text = progress_list.text
         progress = update_progress(progress, progress_text)  
-        
+
+    
     if not fail:
-        
-        WebDriverWait(driver, 40).until(EC.element_to_be_clickable(By.XPATH,'//*[@id="process-package-button"]')).click() # Procesar paquete
-        st.balloons()
-        info.info("""
-                Se han subido todos los archivos correctamente y se va a publicar el contenido. 
-                Espera brevemente y comprueba en el canal apropiado.
-                """)
-                
+        try:
+            # Wait for the element to become clickable
+            #WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="process-package-button"]/div'))).click()
+            WebDriverWait(driver, 40).until(EC.element_to_be_clickable((By.XPATH, '/html/body/ytcms-package-immersive/ytcp-modal-dialog/tp-yt-paper-dialog/div/div[1]/ytcms-package-immersive-header/ytcms-package-immersive-metadata/div[2]/ytcp-button[3]/div'))).click()
+            st.balloons()
+            info.info("""
+                    Se han subido todos los archivos correctamente y se va a publicar el contenido. 
+                    Espera brevemente y comprueba en el canal apropiado.
+                    """)
+        except Exception as e:
+            st.write("An exception occurred: ", e)
+                    
     driver.quit()
     upload_bar.empty()
+    
+
              
     return name
-######################################################
+
+#########################################################
+
 
 #######################################################################################################################################
 
@@ -361,7 +405,6 @@ if __name__ == "__main__":
         if correct_file:    
             info = st.info('Archivo recibido. Se va a intentar publicar el contenido, no cierres la página hasta que acabe.')
             run_selenium(file)
-            # os.remove(os.path.join(r'C:\Users\pablo.perezmartin\Documents\cleoycuquin\Automatizacion\temp',final_filename))
             os.remove(os.path.join(r'A:\Automatizacion_LEA\temp',final_filename))
         else:
             st.error('Formato de archivo no soportado. Inténtalo con un excel/ods/csv.')
