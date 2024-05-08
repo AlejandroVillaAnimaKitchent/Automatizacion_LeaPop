@@ -20,7 +20,7 @@ st.title("Catálogo de Miniaturas de Canciones")
 
 st.subheader('Escoge las miniaturas que quieras usar.')
 
-df_canciones = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miniaturas_LeaPop.csv')
+df_canciones = pd.read_csv(r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miniaturas_LeaPop.csv')
 df_canciones =df_canciones[df_canciones['Category']=='Music']
 
 selected = []
@@ -58,7 +58,7 @@ else:
     st.info('No hay vídeos seleccionados')    
     palabra =st.text_input('Ingrese una palabra clave de la miniatura que desea buscar : ')
     if palabra:
-        df = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Individuales_Colecciones_LeaPop.csv')
+        df = pd.read_csv(r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Individuales_Colecciones_LeaPop.csv')
         df = df[(df['Components']==1)& (df['Activo']=='Si')]
         df_videos = search_entries(df,palabra)
         selected =  list(df_videos.Name.unique())
@@ -96,7 +96,7 @@ for song_slice in generate_slices(len(songs)):
                         with cols[i]:
                             num = row*4 + i +1 
                             image = con_minis[tab_index+song_slice.start][num]
-                            st.image(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Thumbs\lowres\{}".format(image))
+                            st.image(r"\\repos\Material_Definitivo\LEA\COLECCIONES\Thumbs\lowres\{}".format(image))
                             agree = st.checkbox("{}".format(image.replace('.png','')),key=songs[tab_index+song_slice.start]+str(row)+str(i)+'_')
                             mini_list.append(agree) 
         song_thumb_dict[songs[tab_index+song_slice.start]]=mini_list

@@ -28,23 +28,23 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 # Colecciones  
 
-collect_df =pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Individuales_Colecciones_LeaPop.csv")
+collect_df =pd.read_csv(r"\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Individuales_Colecciones_LeaPop.csv")
 ##################################################################################### 
 #Channels to include Provisionary solution
 
-csv_file = df_channel = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\canales_excel_yt.csv')
+csv_file = df_channel = pd.read_csv(r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\canales_excel_yt.csv')
 
 ##################################################################################### 
 channels = df_channel.set_index('Título del canal')['Canal'].to_dict()
-channels_cont = pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Contador_colecciones.csv")     
+channels_cont = pd.read_csv(r"\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Contador_colecciones.csv")     
 categories = ['Music','Education']
 languages ={'Español':'ES','Portugués':'PT'}
-Promos_Intro_df = pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Promos_Intro_LeaPop.csv")
+Promos_Intro_df = pd.read_csv(r"\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Promos_Intro_LeaPop.csv")
 
 #####################################################################################
 # Dictionary of Thumbnails 
 
-df_thumbs = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miniaturas_LeaPop.csv')
+df_thumbs = pd.read_csv(r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miniaturas_LeaPop.csv')
 df_thumbs = df_thumbs.drop(df_thumbs.columns[[0]], axis=1)
 #df_dict = df_thumbs.apply(lambda row: row.dropna().values, axis=1).to_dict()
 #all_thumbs = {values[0]: list(values[1:]) for values in df_dict.values()}
@@ -52,7 +52,7 @@ df_thumbs = df_thumbs.drop(df_thumbs.columns[[0]], axis=1)
 ##################################################################################### 
 # Tags and descriptions 
 
-tags_description = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Tags_LeaPop.csv')
+tags_description = pd.read_csv(r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Tags_LeaPop.csv')
 
 #############################################################################################################################
 
@@ -539,14 +539,14 @@ def main():
                 index = channels_cont[channels_cont['Título del canal'] ==channel_choice].index[0]
                 channels_cont.loc[index,'Contador colecciones'] +=1
                 col_number =channels_cont.loc[index,'Contador colecciones']
-                channels_cont.to_csv(r"\\cancer\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Contador_colecciones.csv", index=False)
+                channels_cont.to_csv(r"\\repos\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Contador_colecciones.csv", index=False)
                 channel_choice_windows = channel_choice.replace(':','').replace('!','') # Omit dangerous characters for file naming.
-                file_path = f'\\\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\\Youtube_Excels\\{channel_choice_windows}_{col_number}.xlsx'
+                file_path = f'\\\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\\Youtube_Excels\\{channel_choice_windows}_{col_number}.xlsx'
     
                 try:
                     df.to_excel(file_path, header=True, index=False, engine='xlsxwriter')
                     st.success(f'Se ha creado el archivo {channel_choice_windows}_{col_number}.xlsx  en la ubicación')
-                    st.success(r'\\'+f'\\cancer\\Material_Definitivo\\LEA\\COLECCIONES\\ Lea&Pop Databases\\Youtube_Excels\\{channel_choice_windows}_{col_number}.xlsx')
+                    st.success(r'\\'+f'\\repos\\Material_Definitivo\\LEA\\COLECCIONES\\ Lea&Pop Databases\\Youtube_Excels\\{channel_choice_windows}_{col_number}.xlsx')
                 except Exception as e:
                     st.error(e)
         else:

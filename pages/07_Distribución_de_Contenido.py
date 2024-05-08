@@ -78,17 +78,17 @@ def update_progress(progress_dict, progress_text):
 ######################################################
 def get_file_path(file):
 
-    #Ind_Col_Lea =  pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Individuales_LeaPop.csv')
-    pops = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Pops_LeaPop.csv')
-    canciones = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Canciones_LeaPop.csv')
-    promos = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Promos_LeaPop.csv')
-    miscelaneas = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miscelanea_LeaPop.csv')
-    individual = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Individuales_LeaPop.csv')
+    #Ind_Col_Lea =  pd.read_csv(r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Individuales_LeaPop.csv')
+    pops = pd.read_csv(r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Pops_LeaPop.csv')
+    canciones = pd.read_csv(r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Canciones_LeaPop.csv')
+    promos = pd.read_csv(r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Promos_LeaPop.csv')
+    miscelaneas = pd.read_csv(r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miscelanea_LeaPop.csv')
+    individual = pd.read_csv(r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Individuales_LeaPop.csv')
     
     
     # Match a las miniaturas
     if file.endswith('.png'):
-        file_path = os.path.join(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Thumbs',file)
+        file_path = os.path.join(r'\\repos\Material_Definitivo\LEA\COLECCIONES\Thumbs',file)
         return file_path
     
     # Match a los vídeos
@@ -119,10 +119,10 @@ def get_file_path(file):
 def find_file(filename):
     # Check in specific folders first
     specific_folders = [
-        r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Thumbs',
-        r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Episodios sueltos',
-        r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Canciones sueltas',
-        r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Colecciones'
+        r'\\repos\Material_Definitivo\LEA\COLECCIONES\Thumbs',
+        r'\\repos\Material_Definitivo\LEA\COLECCIONES\Episodios sueltos',
+        r'\\repos\Material_Definitivo\LEA\COLECCIONES\Canciones sueltas',
+        r'\\repos\Material_Definitivo\LEA\COLECCIONES\Colecciones'
         ]
     for folder in specific_folders:
         for file in os.listdir(folder):
