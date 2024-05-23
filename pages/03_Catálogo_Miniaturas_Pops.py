@@ -20,7 +20,7 @@ st.title("Catálogo de Miniaturas de Pops")
 
 st.subheader('Escoge las miniaturas que quieras usar.')
 
-df_pops = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miniaturas_LeaPop.csv')
+df_pops = pd.read_csv(r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miniaturas_LeaPop.csv')
 df_pops = df_pops[df_pops['Category']=='Education']
 
 
@@ -61,7 +61,7 @@ if 'selected_videos' in st.session_state:
 else:
     palabra =st.text_input('Ingrese una palabra clave de la miniatura que desea buscar : ')
     if palabra:
-        df = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Individuales_Colecciones_LeaPop.csv')
+        df = pd.read_csv(r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Individuales_Colecciones_LeaPop.csv')
         df = df[(df['Components']==1)& (df['Activo']=='Si')]
         df_videos = search_entries(df,palabra)
         selected =  list(df_videos.Name.unique())    
@@ -84,7 +84,7 @@ for pop_silce in generate_slices(len(poppies)):
     poptabs = st.tabs(list(poppies)[pop_silce])
     con_minis = df_sliced.apply(lambda row: row.dropna().values, axis=1)[pop_silce]
     for tab_index in range(len(poptabs)):
-        with poptabs[tab_index]: 
+        with poptabs[tab_index]:
             mini_list = []
             with st.expander("Desplegar"):
                 st.header(poppies[tab_index+pop_silce.start])
@@ -97,7 +97,7 @@ for pop_silce in generate_slices(len(poppies)):
                         with cols[i]:
                             num = row*4 + i +1 
                             image = con_minis[tab_index+pop_silce.start][num]
-                            st.image(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Thumbs\lowres\{}".format(image))
+                            st.image(r"\\repos\Material_Definitivo\LEA\COLECCIONES\Thumbs\lowres\{}".format(image))
                             agree = st.checkbox("{}".format(image.replace('.png','')),key=poppies[tab_index+pop_silce.start]+str(row)+str(i)+'_')
                             mini_list.append(agree) 
                             # st.session_state['song_thumb_list'].append(agree)

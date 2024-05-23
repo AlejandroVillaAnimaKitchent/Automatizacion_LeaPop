@@ -39,13 +39,13 @@ def handle_choice(choice):
     if choice =="Ninguna":
          st.error('Debe Escoger una Opción válida')   
     elif choice == "Pops":
-         dB_path = r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Pops_LeaPop.csv'
+         dB_path = r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Pops_LeaPop.csv'
          df = pd.read_csv(dB_path)
     elif choice == "Canciones":
-         dB_path = r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Canciones_LeaPop.csv'
+         dB_path = r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Canciones_LeaPop.csv'
          df = pd.read_csv(dB_path)
     elif choice == "Misceláneas":
-         dB_path = r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miscelanea_LeaPop.csv'
+         dB_path = r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miscelanea_LeaPop.csv'
          df = pd.read_csv(dB_path)
 # Streamlit app
 def main():
@@ -72,10 +72,10 @@ def main():
         if st.button("Enviar"):
             df2= process_collection_file(df2)
             try:
-                df2.to_excel(f'\\\\cancer\\Material_Definitivo\\LEA\\COLECCIONES\\{file.name}',index=False, header=False)
+                df2.to_excel(f'\\\\repos\\Material_Definitivo\\LEA\\COLECCIONES\\{file.name}',index=False, header=False)
                 st.success("De las colecciones entregadas se tuvieron en cuenta las siguientes:")
                 st.dataframe(df2)
-                st.success(f'Su nuevo archivo {file.name}  está en la carpeta \\\\cancer\\Material_Definitivo\\LEA\\COLECCIONES')
+                st.success(f'Su nuevo archivo {file.name}  está en la carpeta \\\\repos\\Material_Definitivo\\LEA\\COLECCIONES')
                 st.success('Puede dirigirse directamente a la aplicación a hacer sus colecciones.')
             except PermissionError: 
                 st.error('El archivo que se intenta reescribir está abierto, por favor cierrelo.')

@@ -26,7 +26,7 @@ st.subheader('Aquí se podrá crear los archivos excel para usar en la aplicaci�
 
 #We Establish the data needed
 #################################################################################################################
-Promos_Intro_df = pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Promos_Intro_LeaPop.csv")
+Promos_Intro_df = pd.read_csv(r"\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Promos_Intro_LeaPop.csv")
    
 categories = ['Ninguna','Canciones','Pops','Miscelaneas']
 languages ={'Español':'ES','Portugués':'PT'}
@@ -241,9 +241,9 @@ if (num_collect > 0) & (num_videos>0):
         
         st.session_state['collections_selected'] = df_final
         
-        df_final.to_excel(f'\\\\cancer\Material_Definitivo\\LEA\\COLECCIONES\\{nombre_archivo}.xlsx',index=False,header=True)
+        df_final.to_excel(f'\\\\repos\Material_Definitivo\\LEA\\COLECCIONES\\{nombre_archivo}.xlsx',index=False,header=True)
         st.success(f'Se ha creado el archivo excel con nombre {nombre_archivo}')
-        st.success('Ubicado en' + r'\\' + '\\cancer\Material_Definitivo\LEA\COLECCIONES')
+        st.success('Ubicado en' + r'\\' + '\\repos\Material_Definitivo\LEA\COLECCIONES')
        
 else: st.info('Elija el número de colecciones')
 #########################

@@ -28,23 +28,23 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 # Colecciones  
 
-collect_df =pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Individuales_Colecciones_LeaPop.csv")
+collect_df =pd.read_csv(r"\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Individuales_Colecciones_LeaPop.csv")
 ##################################################################################### 
 #Channels to include Provisionary solution
 
-csv_file = df_channel = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\canales_excel_yt.csv')
+csv_file = df_channel = pd.read_csv(r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\canales_excel_yt.csv')
 
 ##################################################################################### 
 channels = df_channel.set_index('Título del canal')['Canal'].to_dict()
-channels_cont = pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Contador_colecciones.csv")     
+channels_cont = pd.read_csv(r"\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Contador_colecciones.csv")     
 categories = ['Music','Education']
 languages ={'Español':'ES','Portugués':'PT'}
-Promos_Intro_df = pd.read_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Promos_Intro_LeaPop.csv")
+Promos_Intro_df = pd.read_csv(r"\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Promos_Intro_LeaPop.csv")
 
 #####################################################################################
 # Dictionary of Thumbnails 
 
-df_thumbs = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miniaturas_LeaPop.csv')
+df_thumbs = pd.read_csv(r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Miniaturas_LeaPop.csv')
 df_thumbs = df_thumbs.drop(df_thumbs.columns[[0]], axis=1)
 #df_dict = df_thumbs.apply(lambda row: row.dropna().values, axis=1).to_dict()
 #all_thumbs = {values[0]: list(values[1:]) for values in df_dict.values()}
@@ -52,7 +52,7 @@ df_thumbs = df_thumbs.drop(df_thumbs.columns[[0]], axis=1)
 ##################################################################################### 
 # Tags and descriptions 
 
-tags_description = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Tags_LeaPop.csv')
+tags_description = pd.read_csv(r'\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Cols_DB\Tags_LeaPop.csv')
 
 #############################################################################################################################
 
@@ -64,12 +64,7 @@ tags_description = pd.read_csv(r'\\cancer\Material_Definitivo\LEA\COLECCIONES\Le
 ############################
 def df_dictionary(selected_videos):
     global df_thumbs, df_dict
-    # print(selected_videos.Name)
     df_thumbs = df_thumbs[df_thumbs['Title Spanish'].isin(selected_videos.Name)]
-    
-    # print('-----------------------------------------')
-    # print(df_thumbs)
-    # print('-----------------------------------------')
     df_dict = df_thumbs.apply(lambda row: row.dropna().values, axis=1).to_dict()
     return  {values[0]: list(values[1:]) for values in df_dict.values()}
 ############################
@@ -306,7 +301,7 @@ def create_descs():
         if la_box:
             desc += descriptions_dict[des] + ' '
             
-    des = st.text_area('Escriba un complemento a las descripciones escogidas (o su propia descripción si no ha elegido ninguna) para todos los vídeos')
+    des = st.text_input('Escriba un complemento a las descripciones escogidas (o su propia descripción si no ha elegido ninguna) para todos los vídeos')
     if des:
         desc += ' ' + des
     else:
@@ -326,7 +321,7 @@ def create_df():
     
     ##############################################
     #Very Important for videos_df assigment to be first
-    df['filename']= concatenate_list([item+'.mp4' for item in collections_selected.columns],length_df)
+    df['filename']= concatenate_list([item+'.mp4' for item in collections_selected.columns])
     ##############################################
     df['channel'] = channels[channel_choice]
     df['category'] = category_chosen
@@ -366,7 +361,6 @@ def ask_file():
         selected_videos = collect_df[(collect_df['Filename'].isin(videos_list)) & (collect_df['Components']==1)]
         videos_df = selected_videos.Name
         
-        # print(selected_videos)
         all_thumbs =  df_dictionary(selected_videos)
         
         thumb_dict ={}
@@ -379,7 +373,7 @@ def ask_file():
                     non_na_thumbs = related_thumbs.stack().dropna().tolist()
                     #st.write(Name)
                     #st.write(non_na_thumbs)
-                    thumb_dict[non_na_thumbs[0]] = non_na_thumbs[1:] 
+                    thumb_dict[non_na_thumbs[0]] =non_na_thumbs[1:] 
                 except: 
                     st.error("CUIDADO !!!!!! NO PROCEDA")
                     st.error("Para el video '{}' No se encontraron Thumbs".format(Name))
@@ -427,23 +421,18 @@ def thumbs_labels_creator():
     for j in range(length_df):
         col = collections_selected.columns[j%len(collections_selected.columns)]
         if len(thumb_dict.keys())>0:
-            # print(thumb_dict.keys())
-            videos = [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
-            videofilename = videos[0]
-            video = selected_videos[selected_videos.Filename==videofilename]['Name'].values[0]
-            if video in thumb_dict.keys() and len(thumb_dict[video])>0:
-                custom_thumbs.append(random.choice(thumb_dict[video]))
-            else:
-                # print(all_thumbs)
-                # print(video)
-                custom_thumbs.append(random.choice(all_thumbs[video]))
+                videos = [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
+                videofilename = videos[0]
+                video = selected_videos[selected_videos.Filename==videofilename]['Name'].values[0]
+                if len(thumb_dict[video])>0:
+                    custom_thumbs.append(random.choice(thumb_dict[video]))
+                else:
+                    custom_thumbs.append(random.choice(all_thumbs[video]))
         else:
             for col in collections_selected.columns:
                 videos = [video for video in collections_selected[col] if video not in list(Promos_Intro_df['Filename'])]
                 videofilename = videos[0]
                 video = selected_videos[selected_videos.Filename==videofilename]['Name'].values[0]
-                # print('video')
-                # print(all_thumbs)
                 custom_thumbs.append(random.choice(all_thumbs[video]))
 ##########################
     
@@ -550,14 +539,14 @@ def main():
                 index = channels_cont[channels_cont['Título del canal'] ==channel_choice].index[0]
                 channels_cont.loc[index,'Contador colecciones'] +=1
                 col_number =channels_cont.loc[index,'Contador colecciones']
-                channels_cont.to_csv(r"\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Contador_colecciones.csv", index=False)
+                channels_cont.to_csv(r"\\repos\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Contador_colecciones.csv", index=False)
                 channel_choice_windows = channel_choice.replace(':','').replace('!','') # Omit dangerous characters for file naming.
-                file_path = f'\\\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\\Youtube_Excels\\{channel_choice_windows}_{col_number}.xlsx'
+                file_path = f'\\\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\\Youtube_Excels\\{channel_choice_windows}_{col_number}.xlsx'
     
                 try:
-                    df.to_excel(file_path.replace('|',''), header=True, index=False, engine='xlsxwriter')
+                    df.to_excel(file_path, header=True, index=False, engine='xlsxwriter')
                     st.success(f'Se ha creado el archivo {channel_choice_windows}_{col_number}.xlsx  en la ubicación')
-                    st.success(r'\\'+f'\\cancer\\Material_Definitivo\\LEA\\COLECCIONES\\ Lea&Pop Databases\\Youtube_Excels\\{channel_choice_windows}_{col_number}.xlsx'.replace('|',''))
+                    st.success(r'\\'+f'\\repos\\Material_Definitivo\\LEA\\COLECCIONES\\ Lea&Pop Databases\\Youtube_Excels\\{channel_choice_windows}_{col_number}.xlsx')
                 except Exception as e:
                     st.error(e)
         else:
@@ -575,8 +564,7 @@ def main():
                
            
     except Exception as e:
-        # print(e)
-        st.write(e)
+        print(e)
         st.info('Necesitas añadir un excel o eleger colecciones de vídeos mediante las pestañas anteriores.')
 ###########################################
 
