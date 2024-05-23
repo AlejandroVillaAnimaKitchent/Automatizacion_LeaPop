@@ -435,6 +435,7 @@ def thumbs_labels_creator():
                 custom_thumbs.append(random.choice(thumb_dict[video]))
             else:
                 # print(all_thumbs)
+                # print(video)
                 custom_thumbs.append(random.choice(all_thumbs[video]))
         else:
             for col in collections_selected.columns:
@@ -554,9 +555,9 @@ def main():
                 file_path = f'\\\\cancer\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\\Youtube_Excels\\{channel_choice_windows}_{col_number}.xlsx'
     
                 try:
-                    df.to_excel(file_path, header=True, index=False, engine='xlsxwriter')
+                    df.to_excel(file_path.replace('|',''), header=True, index=False, engine='xlsxwriter')
                     st.success(f'Se ha creado el archivo {channel_choice_windows}_{col_number}.xlsx  en la ubicación')
-                    st.success(r'\\'+f'\\cancer\\Material_Definitivo\\LEA\\COLECCIONES\\ Lea&Pop Databases\\Youtube_Excels\\{channel_choice_windows}_{col_number}.xlsx')
+                    st.success(r'\\'+f'\\cancer\\Material_Definitivo\\LEA\\COLECCIONES\\ Lea&Pop Databases\\Youtube_Excels\\{channel_choice_windows}_{col_number}.xlsx'.replace('|',''))
                 except Exception as e:
                     st.error(e)
         else:
