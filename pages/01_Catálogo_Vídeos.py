@@ -25,7 +25,7 @@ st.subheader('Escoge los vídeos que quieras usar.')
 #We call our videos DB 
 #######################################################################################################################################
 df = pd.read_csv(r"\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Individuales_Colecciones_LeaPop.csv")
-df = df[df['Activo']=='Si']
+df = df[(df['Activo']=='Si') & (df['Components']==1)]
 #######################################################################################################################################
 
 
