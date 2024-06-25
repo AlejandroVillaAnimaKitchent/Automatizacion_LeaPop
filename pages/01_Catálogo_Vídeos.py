@@ -47,7 +47,10 @@ if idioma!='Ninguno':
             for col_idx1, item1 in enumerate(row_items1):
                 checkbox_state1 = columns1[col_idx1].checkbox(item1,key=str(col_idx1) + item1+str(row_items1))
                 if checkbox_state1:
-                   selected_videos = pd.concat([selected_videos, canciones_df[canciones_df['Name'] == item1]], ignore_index=True)
+                   filtered_df = canciones_df[canciones_df['Name'] == item1].dropna(how='all', axis=1)
+                   selected_videos = pd.concat([selected_videos, filtered_df], ignore_index=True) 
+                    
+                   #selected_videos = pd.concat([selected_videos, canciones_df[canciones_df['Name'] == item1]], ignore_index=True)
 
     with Pops:                 
         pops_df = df[(df['Language']==idioma) & (df['Category']=='Education')]
@@ -60,7 +63,10 @@ if idioma!='Ninguno':
             for col_idx2, item2 in enumerate(row_items2):
                 checkbox_state = columns2[col_idx2].checkbox(item2,key=str(col_idx2) + item2+str(row_items2))
                 if checkbox_state:
-                    selected_videos = pd.concat([selected_videos, pops_df[pops_df['Name'] == item2]], ignore_index=True)
+                    filtered_df = pops_df[pops_df['Name'] == item2].dropna(how='all', axis=1)
+                    selected_videos = pd.concat([selected_videos, filtered_df], ignore_index=True) 
+              
+                    #selected_videos = pd.concat([selected_videos, pops_df[pops_df['Name'] == item2]], ignore_index=True)
                     
     with sing_along:
         sing_along_df = df[(df['Language']==idioma) & (df['Category']=='Sing_Along')]
@@ -74,7 +80,10 @@ if idioma!='Ninguno':
                 for col_idx2, item2 in enumerate(row_items2):
                     checkbox_state = columns2[col_idx2].checkbox(item2,key=str(col_idx2) + item2+str(row_items2))
                     if checkbox_state:
-                        selected_videos = pd.concat([selected_videos, sing_along_df[sing_along_df['Name'] == item2]], ignore_index=True)
+                        filtered_df = sing_along_df[sing_along_df['Name'] == item2].dropna(how='all', axis=1)
+                        selected_videos = pd.concat([selected_videos, filtered_df], ignore_index=True) 
+                  
+                        #selected_videos = pd.concat([selected_videos, sing_along_df[sing_along_df['Name'] == item2]], ignore_index=True)
         else: st.info('No hay NADA')
 
         
