@@ -539,7 +539,7 @@ def main():
                 index = channels_cont[channels_cont['Título del canal'] ==channel_choice].index[0]
                 channels_cont.loc[index,'Contador colecciones'] +=1
                 col_number =channels_cont.loc[index,'Contador colecciones']
-                channels_cont.to_csv(r"\\repos\Material_Definitivo\telerin\COLECCIONES\Colecciones_DataBase\Contador_colecciones.csv", index=False)
+                channels_cont.to_csv(r"\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\Contador_colecciones.csv", index=False)
                 channel_choice_windows = channel_choice.replace(':','').replace('!','') # Omit dangerous characters for file naming.
                 file_path = f'\\\\repos\Material_Definitivo\LEA\COLECCIONES\Lea&Pop Databases\\Youtube_Excels\\{channel_choice_windows}_{col_number}.xlsx'
     
